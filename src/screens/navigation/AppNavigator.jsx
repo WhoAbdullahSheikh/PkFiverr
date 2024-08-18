@@ -17,7 +17,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Signuo"
+        initialRouteName="Signin"
         screenOptions={{
           headerShown: false,
           animation: 'slide_from_bottom',
