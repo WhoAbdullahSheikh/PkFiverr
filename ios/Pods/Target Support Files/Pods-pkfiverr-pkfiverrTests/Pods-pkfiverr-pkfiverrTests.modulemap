@@ -1,0 +1,6 @@
+framework module Pods_pkfiverr_pkfiverrTests {
+  umbrella header "Pods-pkfiverr-pkfiverrTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

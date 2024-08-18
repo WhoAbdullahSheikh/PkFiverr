@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "942835851882",
+    "project_id": "pkfiverr-750f3",
+    "storage_bucket": "pkfiverr-750f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942835851882:android:5d82935ad9bf0bce9fe013",
+        "android_client_info": {
+          "package_name": "com.pkfiverr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "942835851882-rc37oe2ratfe4facg6a8hbgdeil3ujqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pkfiverr",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKE-kQpuS7VGoM-gPRwqN_y-bxR2xH9Ew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "942835851882-dotmng06e00d4k875s3e52mf5m9hmh87.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.pkfiverr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
