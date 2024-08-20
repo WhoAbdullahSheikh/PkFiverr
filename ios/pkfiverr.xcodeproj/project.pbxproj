@@ -17,6 +17,7 @@
 		1879BDC92C6E9E7C00FBED2E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1879BDC82C6E9E7B00FBED2E /* UIKit.framework */; };
 		18FDC3762C6CDA8300427789 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18FDC3752C6CDA8300427789 /* GoogleService-Info.plist */; };
 		22381C286661438F8BDFCE73 /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D028E6059842428388AF8F4F /* Raleway-Regular.ttf */; };
+		2CAE827BC2B1F29DEAC8A408 /* libPods-pkfiverr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 613E1D724F830412F5DC4BC4 /* libPods-pkfiverr.a */; };
 		2D8D2199EB59438B9A4C1E68 /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0DC6136B24874BFEA17280A4 /* Montserrat-Thin.ttf */; };
 		35A3613D8C4A43AFA6F51DC5 /* Raleway-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A59EF1A0AC7A4D1AA7B4FE33 /* Raleway-Italic.ttf */; };
 		3DB603B6FA71422EB31CE80B /* Raleway-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A8947B2810C42E3B09C8B2A /* Raleway-ThinItalic.ttf */; };
@@ -31,6 +32,7 @@
 		7CE21ED1EF4D35867FCB3360 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0548A52BCDA4B71339D7A8C8 /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		84E8C85208A34C4F8217960B /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7DA9F4C53B704F3ABC3D8C72 /* Montserrat-Light.ttf */; };
+		8667378B0C8BD380683F02F5 /* libPods-pkfiverr-pkfiverrTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5663147227347E130B9331C9 /* libPods-pkfiverr-pkfiverrTests.a */; };
 		8B6422679B134B03BB5DC269 /* Montserrat-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 695454EF91054176B22D47B0 /* Montserrat-BlackItalic.ttf */; };
 		8BBECE6420DC45349257FB7A /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D55002CDA2C542E1889C62B0 /* Montserrat-SemiBold.ttf */; };
 		909619FC2BC0428988A35426 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 51CA2F6D062743F4AAC79199 /* Montserrat-Bold.ttf */; };
@@ -43,7 +45,6 @@
 		D16BC5EB06B0444B8166A1EF /* Raleway-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FED46133CF7B4798B0ADB5A1 /* Raleway-BoldItalic.ttf */; };
 		DB73A972D5E44811984C5A3F /* Raleway-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 811BB41B2B8241EA88DA0E71 /* Raleway-ExtraBold.ttf */; };
 		E56696793B5E4D6C8D82C105 /* Raleway-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 327093CB8B6C4287AA033C9C /* Raleway-ExtraLightItalic.ttf */; };
-		E897733D8E57B13644A032F5 /* Pods_pkfiverr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AB8CF166BB76C4211FE1863 /* Pods_pkfiverr.framework */; };
 		E9C27E436BB94D82912FB50D /* Montserrat-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7978825F1D134C70A225B1C0 /* Montserrat-BoldItalic.ttf */; };
 		EA452641AF1E434B87297600 /* Raleway-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E0DD8AD250FF4D9CA30FF81E /* Raleway-Medium.ttf */; };
 		EC96632999794A07A05E2E5F /* Montserrat-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 590387270603491EA88EB577 /* Montserrat-ExtraBold.ttf */; };
@@ -53,7 +54,6 @@
 		FAE6BFD9D0A6441584EB1B82 /* Montserrat-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABF25019A7E04007B5DF123F /* Montserrat-Black.ttf */; };
 		FCD67878AEB54CFB9EC51E5B /* Raleway-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 69E00C96FAB34AFB9315DD31 /* Raleway-SemiBoldItalic.ttf */; };
 		FE44CB4EB54E4753AB9AFEAE /* Montserrat-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E39FB5472B7042C7A4F80D32 /* Montserrat-ExtraBoldItalic.ttf */; };
-		FFD4E421BBAF02675C993E5F /* Pods_pkfiverr_pkfiverrTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F12C96A993B5589AF01D8570 /* Pods_pkfiverr_pkfiverrTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,11 +98,12 @@
 		400D640C655B430F8618D1CC /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = ../assets/fonts/Ionicons.ttf; sourceTree = "<group>"; };
 		48853E0088FB4E69B4E8AFBB /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraLightItalic.ttf"; path = "../assets/fonts/Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		497C3B1ACC3B4E4D93EC37F3 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = ../assets/fonts/SimpleLineIcons.ttf; sourceTree = "<group>"; };
-		4AB8CF166BB76C4211FE1863 /* Pods_pkfiverr.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pkfiverr.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E680E3AFA3A42F2901A47F7 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = ../assets/fonts/Octicons.ttf; sourceTree = "<group>"; };
 		51CA2F6D062743F4AAC79199 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Bold.ttf"; path = "../assets/fonts/Montserrat-Bold.ttf"; sourceTree = "<group>"; };
 		53072E8EB1C1467A95DDE2A7 /* Raleway-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Raleway-ExtraBoldItalic.ttf"; path = "../assets/fonts/Raleway-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		5663147227347E130B9331C9 /* libPods-pkfiverr-pkfiverrTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-pkfiverr-pkfiverrTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		590387270603491EA88EB577 /* Montserrat-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraBold.ttf"; path = "../assets/fonts/Montserrat-ExtraBold.ttf"; sourceTree = "<group>"; };
+		613E1D724F830412F5DC4BC4 /* libPods-pkfiverr.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-pkfiverr.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		62C2FF22D1E149EFAB297C65 /* Raleway-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Raleway-Black.ttf"; path = "../assets/fonts/Raleway-Black.ttf"; sourceTree = "<group>"; };
 		66F44A3E78A14DDB9AE4336D /* FontAwesome6_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome6_Brands.ttf; path = ../assets/fonts/FontAwesome6_Brands.ttf; sourceTree = "<group>"; };
 		695454EF91054176B22D47B0 /* Montserrat-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-BlackItalic.ttf"; path = "../assets/fonts/Montserrat-BlackItalic.ttf"; sourceTree = "<group>"; };
@@ -138,7 +139,6 @@
 		E970BC511D624F6490EF9822 /* Raleway-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Raleway-SemiBold.ttf"; path = "../assets/fonts/Raleway-SemiBold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F00211A8DEEC408DB13012F2 /* Raleway-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Raleway-ExtraLight.ttf"; path = "../assets/fonts/Raleway-ExtraLight.ttf"; sourceTree = "<group>"; };
-		F12C96A993B5589AF01D8570 /* Pods_pkfiverr_pkfiverrTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pkfiverr_pkfiverrTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F355F730109901F63C014930 /* Pods-pkfiverr-pkfiverrTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pkfiverr-pkfiverrTests.release.xcconfig"; path = "Target Support Files/Pods-pkfiverr-pkfiverrTests/Pods-pkfiverr-pkfiverrTests.release.xcconfig"; sourceTree = "<group>"; };
 		F441466499984F739679EF41 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = ../assets/fonts/FontAwesome5_Solid.ttf; sourceTree = "<group>"; };
 		FEA4003321534685BD17CE7D /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = ../assets/fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
@@ -151,7 +151,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFD4E421BBAF02675C993E5F /* Pods_pkfiverr_pkfiverrTests.framework in Frameworks */,
+				8667378B0C8BD380683F02F5 /* libPods-pkfiverr-pkfiverrTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,7 +160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1879BDC92C6E9E7C00FBED2E /* UIKit.framework in Frameworks */,
-				E897733D8E57B13644A032F5 /* Pods_pkfiverr.framework in Frameworks */,
+				2CAE827BC2B1F29DEAC8A408 /* libPods-pkfiverr.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,8 +267,8 @@
 				1879BDC82C6E9E7B00FBED2E /* UIKit.framework */,
 				1879BDC62C6E9D4100FBED2E /* Xcode.app */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				4AB8CF166BB76C4211FE1863 /* Pods_pkfiverr.framework */,
-				F12C96A993B5589AF01D8570 /* Pods_pkfiverr_pkfiverrTests.framework */,
+				613E1D724F830412F5DC4BC4 /* libPods-pkfiverr.a */,
+				5663147227347E130B9331C9 /* libPods-pkfiverr-pkfiverrTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
