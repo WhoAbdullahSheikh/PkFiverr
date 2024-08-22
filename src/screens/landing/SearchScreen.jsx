@@ -14,11 +14,11 @@ const categories = [
 ];
 
 const interests = [
-    { id: '1', name: 'Create social media content', description: 'Social Media Copywriting, Social Media Design', icon: 'create' }, // Icon for content creation
-    { id: '2', name: 'Develop a brand identity', description: 'Logo Design, Business Cards & Stationery', icon: 'branding-watermark' }, // Icon for brand identity
-    { id: '3', name: 'Edit photos and images', description: 'Product Image Editing, Photo Manipulation', icon: 'photo' }, // Icon for photo editing
-    { id: '4', name: 'Create print-ready designs', description: 'T-Shirts & Merchandise, Illustration', icon: 'print' }, // Icon for print designs
-    { id: '5', name: 'Get professional photos taken', description: 'Product Photographers, Lifestyle & Fashion Photographers', icon: 'camera-alt' }, // Icon for photography
+    { id: '1', name: 'Create social media content', description: 'Social Media Copywriting, Social Media Design', icon: 'create' }, 
+    { id: '2', name: 'Develop a brand identity', description: 'Logo Design, Business Cards & Stationery', icon: 'branding-watermark' }, 
+    { id: '3', name: 'Edit photos and images', description: 'Product Image Editing, Photo Manipulation', icon: 'photo' }, 
+    { id: '4', name: 'Create print-ready designs', description: 'T-Shirts & Merchandise, Illustration', icon: 'print' }, 
+    { id: '5', name: 'Get professional photos taken', description: 'Product Photographers, Lifestyle & Fashion Photographers', icon: 'camera-alt' }, 
 ];
 
 
@@ -101,15 +101,15 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     tabButton: {
-        paddingBottom: 8, // Increased padding for more space
-        paddingHorizontal: 20, // Increased horizontal padding for wider underline
-        borderBottomWidth: 0, // Thicker border for the active tab
+        paddingBottom: 8, 
+        paddingHorizontal: 20, 
+        borderBottomWidth: 0, 
         borderBottomColor: 'transparent',
     },
     activeTabButton: {
         borderBottomColor: '#28b96d',
-        borderBottomWidth: 3, // Increase the border thickness
-        paddingHorizontal: 25, // Further increase horizontal padding for wider active underline
+        borderBottomWidth: 3, 
+        paddingHorizontal: 25, 
     },
     tabText: {
         color: '#797b84',
