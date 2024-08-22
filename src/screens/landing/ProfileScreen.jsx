@@ -1,11 +1,51 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/SimpleLineIcons';
 import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const userSession = await AsyncStorage.getItem('userSession');
+                if (userSession) {
+                    setUser(JSON.parse(userSession));
+                } else {
+                    Alert.alert('No User Data', 'User is not logged in.');
+                }
+            } catch (error) {
+                console.error('Failed to fetch user session', error);
+                Alert.alert('Error', 'Failed to load user data.');
+            }
+        };
+
+        fetchUser();
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('userSession');
+            // Navigate to SignInScreen after logout
+            navigation.navigate('Signin');
+        } catch (error) {
+            console.error('Failed to log out', error);
+            Alert.alert('Error', 'Failed to log out.');
+        }
+    };
+
+    if (!user) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.loadingText}>Loading...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             {/* Profile Header */}
@@ -13,13 +53,13 @@ const ProfileScreen = () => {
                 <View style={styles.profileContainer}>
                     <View style={styles.imageContainer}>
                         <Image
-                            source={{ uri: 'https://pixabay.com/vectors/blank-profile-picture-mystery-man-973460' }} // Replace with your image URL
+                            source={{ uri: user.photoURL || 'https://pixabay.com/vectors/blank-profile-picture-mystery-man-973460' }} // Use user photoURL if available
                             style={styles.profileImage}
                         />
                         {/* Online Indicator */}
                         <View style={styles.onlineIndicator} />
                     </View>
-                    <Text style={styles.profileName}>Abdullah</Text>
+                    <Text style={styles.profileName}>{user.displayName || 'Abdullah'}</Text>
                 </View>
                 <Icon2 name="bell" size={28} color="#ffffff" style={styles.bellIcon} />
             </View>
@@ -92,6 +132,11 @@ const ProfileScreen = () => {
 
                 {/* Footer Section */}
                 <Text style={styles.versionText}>Version 0.0.1(1)</Text>
+
+                {/* Sign Out Button */}
+                <TouchableOpacity style={styles.signOutButton} onPress={handleLogout}>
+                    <Text style={styles.signOutText}>Sign Out</Text>
+                </TouchableOpacity>
             </ScrollView>
         </View>
     );
@@ -121,7 +166,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row', // Align items in a row
         alignItems: 'center',
         flex: 3,
-        
     },
     imageContainer: {
         width: 60,
@@ -155,10 +199,8 @@ const styles = StyleSheet.create({
         fontSize: Platform.OS === 'ios' ? 23 : 18,
         fontWeight: 'bold',
         marginLeft: 15, // Space between the image and the name
-        fontWeight: 'bold',
-        fontFamily:'Raleway-Regular',
+        fontFamily: 'Raleway-Regular',
     },
-    
     bellIcon: {
         flex: 1,
         textAlign: 'right',
@@ -187,7 +229,6 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderBottomColor: '#444444',
         borderBottomWidth: 1,
-       
     },
     menuText: {
         color: '#ffffff',
@@ -195,7 +236,7 @@ const styles = StyleSheet.create({
         marginLeft: 15,
         flex: 1, // Allow text to take up the remaining space
         fontWeight: 'bold',
-        fontFamily:'Raleway-Regular',
+        fontFamily: 'Raleway-Regular',
     },
     versionText: {
         color: '#888888',
@@ -203,6 +244,25 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 30,
         marginBottom: 20,
+    },
+    loadingText: {
+        color: '#ffffff',
+        fontSize: 18,
+        textAlign: 'center',
+        marginTop: 100,
+    },
+    signOutButton: {
+        backgroundColor: '#FF3B30', // Red color for the sign-out button
+        paddingVertical: 15,
+        marginHorizontal: 20,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    signOutText: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 

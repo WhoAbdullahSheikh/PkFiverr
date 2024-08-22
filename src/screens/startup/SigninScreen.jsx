@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { statusCodes } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const SigninScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -15,10 +16,23 @@ const SigninScreen = ({ navigation }) => {
   const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const session = await AsyncStorage.getItem('userSession');
+        if (session) {
+          navigation.navigate('HomeScreen');
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
+      }
+    };
+
+    checkSession();
+
     GoogleSignin.configure({
       webClientId: '942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com',
     });
-  }, []);
+  }, [navigation]);
 
   const onGoogleButtonPress = async () => {
     try {
@@ -34,18 +48,15 @@ const SigninScreen = ({ navigation }) => {
       const registeredUsers = userDoc.data()?.RegisteredUsers || [];
   
       if (registeredUsers.some((u) => u.email === user.email)) {
-        
+        // Save user data in AsyncStorage
+        await AsyncStorage.setItem('userSession', JSON.stringify(user));
         navigation.navigate('HomeScreen');
       } else {
-        
         Alert.alert('Registration Required', 'Please register first.');
-        
       }
     } catch (error) {
-      
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        
-        Alert.alert('Alert','You canceled the Google Sign-in process.');
+        Alert.alert('Alert', 'You canceled the Google Sign-in process.');
       } else {
         console.error(error);
         Alert.alert('Error', 'There was a problem with Google Sign-In.');
@@ -61,9 +72,8 @@ const SigninScreen = ({ navigation }) => {
     console.log('Connect with Facebook');
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     let valid = true;
-    navigation.navigate('HomeScreen');
 
     setEmailError('');
     setPasswordError('');
@@ -79,7 +89,16 @@ const SigninScreen = ({ navigation }) => {
     }
 
     if (valid) {
-      console.log('Continue to the next screen');
+      try {
+        // Simulate authentication
+        const user = { email, password }; // Mock user object
+        await AsyncStorage.setItem('userSession', JSON.stringify(user));
+        console.log('User logged in');
+        navigation.navigate('HomeScreen');
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'There was a problem logging in.');
+      }
     }
   };
 
@@ -194,8 +213,6 @@ const SigninScreen = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

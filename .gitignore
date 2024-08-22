@@ -4,6 +4,7 @@ ios/build/
 ios/DerivedData/
 ios/.symlinks/
 
+
 # Ignore Android build folders
 android/.gradle/
 android/app/build/
