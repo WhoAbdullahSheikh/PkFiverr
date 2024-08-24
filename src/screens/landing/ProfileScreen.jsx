@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/SimpleLineIcons';
 import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 const ProfileScreen = ({ navigation }) => {
     const [user, setUser] = useState(null);
@@ -30,12 +30,16 @@ const ProfileScreen = ({ navigation }) => {
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('userSession');
-            // Navigate to SignInScreen after logout
+            
             navigation.navigate('Signin');
         } catch (error) {
             console.error('Failed to log out', error);
             Alert.alert('Error', 'Failed to log out.');
         }
+    };
+
+    const accountnavigate = () => {
+        navigation.navigate('AccountScreen');
     };
 
     if (!user) {
@@ -53,13 +57,13 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.profileContainer}>
                     <View style={styles.imageContainer}>
                         <Image
-                            source={{ uri: user.photoURL || 'https://pixabay.com/vectors/blank-profile-picture-mystery-man-973460' }} // Use user photoURL if available
+                           source={{ uri: user.photoURL || 'https://pixabay.com/vectors/blank-profile-picture-mystery-man-973460' }} 
                             style={styles.profileImage}
                         />
-                        {/* Online Indicator */}
-                        <View style={styles.onlineIndicator} />
+
+                        
                     </View>
-                    <Text style={styles.profileName}>{user.displayName || 'Abdullah'}</Text>
+                    <Text style={styles.profileName}>{user.displayName || 'Guest'}</Text>
                 </View>
                 <Icon2 name="bell" size={28} color="#ffffff" style={styles.bellIcon} />
             </View>
@@ -100,7 +104,7 @@ const ProfileScreen = ({ navigation }) => {
                             <Text style={styles.menuText}>Preferences</Text>
                             <Icon2 name="chevron-right" size={21} color="#ffffff" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem}>
+                        <TouchableOpacity style={styles.menuItem} onPress={accountnavigate}>
                             <Icon4 name="book-account-outline" size={21} color="#ffffff" />
                             <Text style={styles.menuText}>Account</Text>
                             <Icon2 name="chevron-right" size={21} color="#ffffff" />
@@ -132,11 +136,6 @@ const ProfileScreen = ({ navigation }) => {
 
                 {/* Footer Section */}
                 <Text style={styles.versionText}>Version 0.0.1(1)</Text>
-
-                {/* Sign Out Button */}
-                <TouchableOpacity style={styles.signOutButton} onPress={handleLogout}>
-                    <Text style={styles.signOutText}>Sign Out</Text>
-                </TouchableOpacity>
             </ScrollView>
         </View>
     );
@@ -149,56 +148,55 @@ const styles = StyleSheet.create({
         backgroundColor: '#121213',
     },
     header: {
-        backgroundColor: '#1e4224',
+        backgroundColor: '#0d3d1d',
         paddingTop: Platform.OS === 'ios' ? 80 : 30,
         paddingBottom: 40,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        position: 'absolute', // Make the header fixed
+        position: 'absolute', 
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 10, // Ensure the header is above the scrollable content
+        zIndex: 10, 
     },
     profileContainer: {
-        flexDirection: 'row', // Align items in a row
+        flexDirection: 'row', 
         alignItems: 'center',
         flex: 3,
     },
     imageContainer: {
         width: 60,
         height: 60,
-        borderRadius: 45, // Make the container circular
-        borderWidth: 2,
-        borderColor: '#ffffff', // Optional: Add a border around the image
+        borderRadius: 45, 
+        borderWidth: 0,
+        borderColor: 'black', 
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden', // Ensures the image stays within the circle
-        position: 'relative', // Required for positioning the online indicator
+        overflow: 'hidden', 
+        position: 'relative', 
     },
     profileImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
+        width: '100%', 
+        height: '100%', 
     },
     onlineIndicator: {
         width: 15,
         height: 15,
         borderRadius: 7.5,
-        backgroundColor: '#34C759', // Green color for online status
+        backgroundColor: '#34C759', 
         borderWidth: 2,
-        borderColor: '#ffffff', // Border color to match the profile border
+        borderColor: '#ffffff', 
         position: 'absolute',
         bottom: 5,
         right: 5,
     },
     profileName: {
         color: '#ffffff',
-        fontSize: Platform.OS === 'ios' ? 23 : 18,
+        fontSize: Platform.OS === 'ios' ? 20 : 18,
         fontWeight: 'bold',
-        marginLeft: 15, // Space between the image and the name
+        marginLeft: 15, 
         fontFamily: 'Raleway-Regular',
     },
     bellIcon: {
@@ -206,16 +204,16 @@ const styles = StyleSheet.create({
         textAlign: 'right',
     },
     scrollContainer: {
-        paddingTop: 130, // Create space for the fixed header
+        paddingTop: 130, 
     },
     section: {
         backgroundColor: '#222324',
         paddingHorizontal: 20,
         paddingVertical: 10,
-        marginBottom: 20, // Space between sections
+        marginBottom: 20, 
     },
     sectionTitle: {
-        backgroundColor: '#121213', // Black background for title
+        backgroundColor: '#121213', 
         color: '#ffffff',
         fontSize: Platform.OS === 'ios' ? 24 : 18,
         fontWeight: 'bold',
@@ -225,7 +223,7 @@ const styles = StyleSheet.create({
     menuItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between', // Space between icon and text
+        justifyContent: 'space-between', 
         paddingVertical: 15,
         borderBottomColor: '#444444',
         borderBottomWidth: 1,
@@ -234,7 +232,7 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: Platform.OS === 'ios' ? 18 : 14,
         marginLeft: 15,
-        flex: 1, // Allow text to take up the remaining space
+        flex: 1, 
         fontWeight: 'bold',
         fontFamily: 'Raleway-Regular',
     },
@@ -252,7 +250,7 @@ const styles = StyleSheet.create({
         marginTop: 100,
     },
     signOutButton: {
-        backgroundColor: '#FF3B30', // Red color for the sign-out button
+        backgroundColor: '#FF3B30', 
         paddingVertical: 15,
         marginHorizontal: 20,
         borderRadius: 5,

@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { statusCodes } from '@react-native-google-signin/google-signin';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SigninScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -26,9 +26,7 @@ const SigninScreen = ({ navigation }) => {
         console.error('Error checking session:', error);
       }
     };
-
     checkSession();
-
     GoogleSignin.configure({
       webClientId: '942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com',
     });
@@ -63,15 +61,12 @@ const SigninScreen = ({ navigation }) => {
       }
     }
   };
-
   const handleSignUpWithApple = () => {
     console.log('Sign Up with Apple');
   };
-
   const handleConnectWithFacebook = () => {
     console.log('Connect with Facebook');
   };
-
   const handleContinue = async () => {
     let valid = true;
 

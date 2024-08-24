@@ -7,7 +7,6 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 
-
 const SignupScreen = ({ navigation }) => {
   useEffect(() => {
     GoogleSignin.configure({
@@ -31,7 +30,7 @@ const SignupScreen = ({ navigation }) => {
       // Signing in with the credential
       await auth().signInWithCredential(googleCredential);
 
-      // Get reference to the 'google' document in the 'users' collection
+      // Get reference to the 'users' collection
       const userRef = firestore().collection('users').doc('facebook');
       const userDoc = await userRef.get();
 
@@ -42,7 +41,7 @@ const SignupScreen = ({ navigation }) => {
       const isAlreadyRegistered = registeredUsers.some((u) => u.email === user.email);
 
       if (isAlreadyRegistered) {
-        Alert.alert('Already Registered', 'This account is already registered.');
+        Alert.alert('Already Registered', 'This account is already registered. Please try to sign in');
       } else {
         // Save user data in Firestore if not already registered
         const userData = {
@@ -69,8 +68,6 @@ const SignupScreen = ({ navigation }) => {
       Alert.alert("Login Failed", "Something went wrong during the sign-in process.");
     }
   }
-
-
 
   const handleSignUpWithApple = () => {
     console.log('Sign Up with Apple');
@@ -138,7 +135,6 @@ const SignupScreen = ({ navigation }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -157,11 +153,9 @@ const styles = StyleSheet.create({
     color: '#28b96d',
     fontSize: Platform.OS === 'ios' ? 50 : 45,
   },
-
   pk: {
     color: '#28b96d',
     fontSize: Platform.OS === 'ios' ? 32 : 28,
-
   },
   goBackButton: {
     position: 'absolute',

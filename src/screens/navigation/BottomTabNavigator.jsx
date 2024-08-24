@@ -66,6 +66,8 @@ const BottomTabNavigator = () => {
           headerTitle: 'Inbox',
           headerStyle: {
             backgroundColor: '#1c1c1c',
+            shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
           },
           headerTitleStyle: {
             color: 'white',
@@ -92,6 +94,8 @@ const BottomTabNavigator = () => {
           headerTitle: 'Manage orders',
           headerStyle: {
             backgroundColor: '#1c1c1c',
+            shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
           },
           headerTitleStyle: {
             color: 'white',

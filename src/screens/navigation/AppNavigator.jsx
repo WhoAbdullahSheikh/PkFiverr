@@ -1,6 +1,14 @@
 import React from 'react';
+import { Platform, TouchableOpacity } from 'react-native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Icon2 from 'react-native-vector-icons/AntDesign';
+import Icon3 from 'react-native-vector-icons/FontAwesome';
+import Icon4 from 'react-native-vector-icons/AntDesign';
+import Icon5 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon6 from 'react-native-vector-icons/FontAwesome6';
+import Icon7 from 'react-native-vector-icons/Octicons';
 import StartupScreen from '../startup/StartupScreen';
 import SignupScreen from '../startup/SignupScreen';
 import SigninScreen from '../startup/SigninScreen';
@@ -10,6 +18,7 @@ import SplashScreen from '../startup/SplashScreen';
 import ProfileScreen from '../landing/ProfileScreen';
 import InboxScreen from '../landing/InboxScreen'; 
 import SearchScreen from '../landing/SearchScreen';
+import AccountScreen from '../profile/AccountScreen';
 
 const Stack = createStackNavigator();
 
@@ -17,10 +26,9 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Signin"
+        initialRouteName="Signup"
         screenOptions={{
           headerShown: false,
-          animation: 'slide_from_bottom',
         }}
       >
         <Stack.Screen
@@ -75,8 +83,8 @@ const AppNavigator = () => {
           component={BottomTabNavigator}
           options={{
             headerShown: false,
-            //header: () => <HomeHeader />, // Use the custom header for the Home screen
-            headerTitle: '', // Hide the screen name
+            
+            headerTitle: '', 
             headerLeft: () => null,
             gestureEnabled: false,
           }}
@@ -86,8 +94,8 @@ const AppNavigator = () => {
           component={ProfileScreen}
           options={{
             headerShown: false,
-            //header: () => <HomeHeader />, // Use the custom header for the Home screen
-            headerTitle: '', // Hide the screen name
+            
+            headerTitle: '', 
             headerLeft: () => null,
             gestureEnabled: false,
           }}
@@ -97,8 +105,8 @@ const AppNavigator = () => {
           component={InboxScreen}
           options={{
             headerShown: false,
-            //header: () => <HomeHeader />, // Use the custom header for the Home screen
-            headerTitle: '', // Hide the screen name
+            
+            headerTitle: '', 
             headerLeft: () => null,
             gestureEnabled: false,
           }}
@@ -108,11 +116,37 @@ const AppNavigator = () => {
           component={SearchScreen}
           options={{
             headerShown: false,
-            //header: () => <HomeHeader />, // Use the custom header for the Home screen
-            headerTitle: '', // Hide the screen name
+            
+            headerTitle: '', 
             headerLeft: () => null,
             gestureEnabled: false,
           }}
+        />
+        <Stack.Screen
+          name="AccountScreen"
+          component={AccountScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: 'Account',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center', 
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()} 
+              >
+                <Icon name="chevron-back" size={28} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
