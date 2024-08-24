@@ -31,7 +31,7 @@ const SignupScreen = ({ navigation }) => {
       await auth().signInWithCredential(googleCredential);
 
       // Get reference to the 'users' collection
-      const userRef = firestore().collection('users').doc('facebook');
+      const userRef = firestore().collection('users').doc('google');
       const userDoc = await userRef.get();
 
       // Extract the RegisteredUsers array or set it to an empty array if not found
