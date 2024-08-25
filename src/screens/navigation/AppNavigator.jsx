@@ -16,9 +16,11 @@ import ForgotPasswordScreen from '../security/ForgotPasswordScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import SplashScreen from '../startup/SplashScreen';
 import ProfileScreen from '../landing/ProfileScreen';
-import InboxScreen from '../landing/InboxScreen'; 
+import InboxScreen from '../landing/InboxScreen';
 import SearchScreen from '../landing/SearchScreen';
-import AccountScreen from '../profile/AccountScreen';
+import AccountScreen from '../settings/AccountScreen';
+import CommunityScreen from '../resources/CommunityScreen';
+import PreferencesScreen from '../settings/PreferencesScreen';  
 
 const Stack = createStackNavigator();
 
@@ -38,7 +40,7 @@ const AppNavigator = () => {
             headerShown: false,
             headerLeft: () => null,
             gestureEnabled: false,
-            ...TransitionPresets.FadeFromBottomAndroid 
+            ...TransitionPresets.FadeFromBottomAndroid
           }}
         />
         <Stack.Screen
@@ -83,19 +85,19 @@ const AppNavigator = () => {
           component={BottomTabNavigator}
           options={{
             headerShown: false,
-            
-            headerTitle: '', 
+
+            headerTitle: '',
             headerLeft: () => null,
             gestureEnabled: false,
           }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
           options={{
             headerShown: false,
-            
-            headerTitle: '', 
+
+            headerTitle: '',
             headerLeft: () => null,
             gestureEnabled: false,
           }}
@@ -105,8 +107,8 @@ const AppNavigator = () => {
           component={InboxScreen}
           options={{
             headerShown: false,
-            
-            headerTitle: '', 
+
+            headerTitle: '',
             headerLeft: () => null,
             gestureEnabled: false,
           }}
@@ -116,8 +118,8 @@ const AppNavigator = () => {
           component={SearchScreen}
           options={{
             headerShown: false,
-            
-            headerTitle: '', 
+
+            headerTitle: '',
             headerLeft: () => null,
             gestureEnabled: false,
           }}
@@ -137,11 +139,63 @@ const AppNavigator = () => {
               color: 'white',
               fontSize: Platform.OS === 'ios' ? 22 : 16,
             },
-            headerTitleAlign: 'center', 
+            headerTitleAlign: 'center',
             headerLeft: () => (
               <TouchableOpacity
                 style={{ paddingLeft: 15 }}
-                onPress={() => navigation.goBack()} 
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="chevron-back" size={28} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="CommunityScreen"
+          component={CommunityScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: 'Community and legal',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="chevron-back" size={28} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="PreferencesScreen"
+          component={PreferencesScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: 'Community and legal',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()}
               >
                 <Icon name="chevron-back" size={28} color="white" />
               </TouchableOpacity>

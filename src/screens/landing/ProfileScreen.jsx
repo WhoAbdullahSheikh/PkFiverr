@@ -41,6 +41,12 @@ const ProfileScreen = ({ navigation }) => {
     const accountnavigate = () => {
         navigation.navigate('AccountScreen');
     };
+    const preferencesnavigate = () => {
+        navigation.navigate('PreferencesScreen');
+    };
+    const communitynavigate = () => {
+        navigation.navigate('CommunityScreen');
+    };
 
     if (!user) {
         return (
@@ -95,11 +101,10 @@ const ProfileScreen = ({ navigation }) => {
                     </View>
                 </View>
 
-                {/* Settings Section */}
                 <View>
                     <Text style={styles.sectionTitle}>Settings</Text>
                     <View style={styles.section}>
-                        <TouchableOpacity style={styles.menuItem}>
+                        <TouchableOpacity style={styles.menuItem} onPress={preferencesnavigate}>
                             <Icon3 name="settings" size={21} color="#ffffff" />
                             <Text style={styles.menuText}>Preferences</Text>
                             <Icon2 name="chevron-right" size={21} color="#ffffff" />
@@ -121,7 +126,7 @@ const ProfileScreen = ({ navigation }) => {
                             <Text style={styles.menuText}>Support</Text>
                             <Icon2 name="chevron-right" size={21} color="#ffffff" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem}>
+                        <TouchableOpacity style={styles.menuItem} onPress={communitynavigate}>
                             <Icon4 name="message-question-outline" size={21} color="#ffffff" />
                             <Text style={styles.menuText}>Community and legal</Text>
                             <Icon2 name="chevron-right" size={21} color="#ffffff" />

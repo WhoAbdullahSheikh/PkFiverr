@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     ScrollView,
     Alert,
+    Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     sectionTitle: {
-        fontSize: 23,
+        fontSize: Platform.OS === 'ios' ? 23 : 20,
         color: '#FFFFFF',
         fontWeight: 'bold',
         marginBottom: 15,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     label: {
-        fontSize: 16,
+        fontSize: Platform.OS === 'ios' ? 16 : 12,
         color: '#797b84',
         fontFamily: 'Raleway-Regular',
     },
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
     },
     optionText: {
-        fontSize: 18,
+        fontSize: Platform.OS === 'ios' ? 18 : 14,
         color: '#FFFFFF',
         fontFamily: 'Raleway-Regular',
         fontWeight: 'bold',
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     logoutText: {
-        fontSize: 18,
+        fontSize: Platform.OS === 'ios' ? 18 : 14,
         fontWeight: 'bold',
         color: '#da5d5d',
         fontFamily: 'Raleway-Regular',
