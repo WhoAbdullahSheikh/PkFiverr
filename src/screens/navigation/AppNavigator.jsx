@@ -18,10 +18,10 @@ import SplashScreen from '../startup/SplashScreen';
 import ProfileScreen from '../landing/ProfileScreen';
 import InboxScreen from '../landing/InboxScreen';
 import SearchScreen from '../landing/SearchScreen';
-import AccountScreen from '../settings/AccountScreen';
+import AccountScreen from '../settings/account/AccountScreen';
 import CommunityScreen from '../resources/CommunityScreen';
-import PreferencesScreen from '../settings/PreferencesScreen';  
-
+import PreferencesScreen from '../settings/preferences/PreferencesScreen';  
+import InterestSelectionScreen from '../interest/InterestSelectionScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -182,6 +182,32 @@ const AppNavigator = () => {
           options={({ navigation }) => ({
             headerShown: true,
             headerTitle: 'Community and legal',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="chevron-back" size={28} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+         <Stack.Screen
+          name="InterestSelectionScreen"
+          component={InterestSelectionScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: '',
             headerStyle: {
               backgroundColor: '#222324',
               shadowColor: 'transparent', // Remove shadow

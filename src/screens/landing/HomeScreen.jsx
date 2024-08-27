@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Image, TouchableOpacity, ImageBackground, Platform, Modal, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, ScrollView, Image, TouchableOpacity, ImageBackground, Platform, Modal, FlatList, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import logoDesign from '../../../assets/images/icons/logodesign.png';
 import aiArtists from '../../../assets/images/icons/AIArtists.png';
@@ -11,6 +11,7 @@ import webtraffic from '../../../assets/images/icons/webtraffic.png';
 
 const HomeScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const services = [
         { text: 'Logo Design', source: logoDesign },
@@ -37,6 +38,23 @@ const HomeScreen = () => {
             <Text style={styles.serviceListText}>{item.text}</Text>
         </TouchableOpacity>
     );
+
+    useEffect(() => {
+        // Simulate a loading delay
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 500); // 0.5 seconds
+
+        return () => clearTimeout(timer); // Cleanup timer on unmount
+    }, []);
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#ffffff" />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -317,6 +335,12 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 16,
         fontFamily: 'Raleway-Regular',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#121214',
     },
 });
 
