@@ -14,7 +14,7 @@ const ProfileScreen = ({ navigation }) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                // Simulate loading delay
+
                 setTimeout(async () => {
                     const userSession = await AsyncStorage.getItem('userSession');
                     if (userSession) {
@@ -22,12 +22,12 @@ const ProfileScreen = ({ navigation }) => {
                     } else {
                         Alert.alert('No User Data', 'User is not logged in.');
                     }
-                    setLoading(false); // End loading
-                }, 500); // 1-second delay
+                    setLoading(false);
+                }, 500);
             } catch (error) {
                 console.error('Failed to fetch user session', error);
                 Alert.alert('Error', 'Failed to load user data.');
-                setLoading(false); // End loading
+                setLoading(false);
             }
         };
 
@@ -165,12 +165,9 @@ const ProfileScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-
-                {/* Footer Section */}
                 <Text style={styles.versionText}>Version 0.0.1(1)</Text>
             </ScrollView>
-
-            {/* Invite Friends Modal */}
+            
             <Modal
                 visible={modalVisible}
                 transparent={true}

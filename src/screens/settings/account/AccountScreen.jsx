@@ -52,6 +52,13 @@ const AccountScreen = ({ navigation }) => {
             },
         ]);
     };
+    const balancenavigate = () => {
+        navigation.navigate('BalanceScreen');
+    };
+
+    const deactivationnavigate = () => {
+        navigation.navigate('DeactivationScreen');
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -69,7 +76,7 @@ const AccountScreen = ({ navigation }) => {
                         <Text style={styles.info}>{email || 'Loading...'}</Text>
                     </View>
 
-                    <TouchableOpacity style={styles.optionContainer}>
+                    <TouchableOpacity style={styles.optionContainer} onPress={balancenavigate}>
                         <Text style={styles.optionText}>Personal balance</Text>
                         <Icon name="chevron-right" size={24} color="#BDBDBD" />
                     </TouchableOpacity>
@@ -80,7 +87,7 @@ const AccountScreen = ({ navigation }) => {
                 <View style={styles.section}>
 
 
-                    <TouchableOpacity style={styles.optionContainer}>
+                    <TouchableOpacity style={styles.optionContainer} onPress={deactivationnavigate}>
                         <Text style={styles.optionText}>Deactivation and deletion</Text>
                         <Icon name="chevron-right" size={24} color="#BDBDBD" />
                     </TouchableOpacity>
@@ -111,9 +118,9 @@ const styles = StyleSheet.create({
 
     },
     contentContainer: {
-        marginTop: 20,
+        marginTop: 0,
         padding: 0,
-        
+
     },
     section: {
         backgroundColor: '#222324',

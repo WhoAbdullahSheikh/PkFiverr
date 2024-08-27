@@ -3,7 +3,7 @@ import { Platform, TouchableOpacity } from 'react-native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Icon2 from 'react-native-vector-icons/AntDesign';
+import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/AntDesign';
 import Icon5 from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,8 +20,12 @@ import InboxScreen from '../landing/InboxScreen';
 import SearchScreen from '../landing/SearchScreen';
 import AccountScreen from '../settings/account/AccountScreen';
 import CommunityScreen from '../resources/CommunityScreen';
-import PreferencesScreen from '../settings/preferences/PreferencesScreen';  
+import PreferencesScreen from '../settings/preferences/PreferencesScreen';
 import InterestSelectionScreen from '../interest/InterestSelectionScreen';
+import BalanceScreen from '../settings/account/BalanceScreen';
+import DeactivationScreen from '../settings/account/DeactivationScreen';
+import ConfirmDelectionScreen from '../settings/account/ConfirmDelectionScreen';
+
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -145,7 +149,7 @@ const AppNavigator = () => {
                 style={{ paddingLeft: 15 }}
                 onPress={() => navigation.goBack()}
               >
-                <Icon name="chevron-back" size={28} color="white" />
+                <Icon name="chevron-back" size={24} color="white" />
               </TouchableOpacity>
             ),
           })}
@@ -171,7 +175,7 @@ const AppNavigator = () => {
                 style={{ paddingLeft: 15 }}
                 onPress={() => navigation.goBack()}
               >
-                <Icon name="chevron-back" size={28} color="white" />
+                <Icon name="chevron-back" size={24} color="white" />
               </TouchableOpacity>
             ),
           })}
@@ -181,7 +185,7 @@ const AppNavigator = () => {
           component={PreferencesScreen}
           options={({ navigation }) => ({
             headerShown: true,
-            headerTitle: 'Community and legal',
+            headerTitle: 'Preferences',
             headerStyle: {
               backgroundColor: '#222324',
               shadowColor: 'transparent', // Remove shadow
@@ -197,12 +201,12 @@ const AppNavigator = () => {
                 style={{ paddingLeft: 15 }}
                 onPress={() => navigation.goBack()}
               >
-                <Icon name="chevron-back" size={28} color="white" />
+                <Icon name="chevron-back" size={24} color="white" />
               </TouchableOpacity>
             ),
           })}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="InterestSelectionScreen"
           component={InterestSelectionScreen}
           options={({ navigation }) => ({
@@ -223,13 +227,101 @@ const AppNavigator = () => {
                 style={{ paddingLeft: 15 }}
                 onPress={() => navigation.goBack()}
               >
-                <Icon name="chevron-back" size={28} color="white" />
+                <Icon name="chevron-back" size={24} color="white" />
               </TouchableOpacity>
             ),
           })}
         />
+        <Stack.Screen
+          name="BalanceScreen"
+          component={BalanceScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: 'Personal Balance',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="chevron-back" size={24} color="white" />
+              </TouchableOpacity>
+            ),
+            headerRight: () => (
+              <TouchableOpacity
+                style={{ paddingRight: 15 }}
+
+              >
+                <Icon2 name="help-circle" size={24} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="DeactivationScreen"
+          component={DeactivationScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: 'Deactivation and deletion',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="chevron-back" size={24} color="white" />
+              </TouchableOpacity>
+            ),
+
+          })}
+        />
+        <Stack.Screen
+          name="ConfirmDelectionScreen"
+          component={ConfirmDelectionScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: 'Delete account',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="chevron-back" size={24} color="white" />
+              </TouchableOpacity>
+            ),
+
+          })}
+        />
       </Stack.Navigator>
-    </NavigationContainer>
+    </NavigationContainer >
   );
 };
 
