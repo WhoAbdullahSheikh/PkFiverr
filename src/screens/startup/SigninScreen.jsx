@@ -5,15 +5,15 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Platform, S
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SigninScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const [emailOrUsernameError, setEmailOrUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -37,16 +37,16 @@ const SigninScreen = ({ navigation }) => {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const { idToken } = await GoogleSignin.signIn();
-  
+
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const userCredential = await auth().signInWithCredential(googleCredential);
       const user = userCredential.user;
       const userRef = firestore().collection('users').doc('google');
       const userDoc = await userRef.get();
       const registeredUsers = userDoc.data()?.RegisteredUsers || [];
-  
+
       if (registeredUsers.some((u) => u.email === user.email)) {
-        // Save user data in AsyncStorage
+        // Save user session to AsyncStorage
         await AsyncStorage.setItem('userSession', JSON.stringify(user));
         navigation.navigate('HomeScreen');
       } else {
@@ -61,20 +61,23 @@ const SigninScreen = ({ navigation }) => {
       }
     }
   };
+
   const handleSignUpWithApple = () => {
     console.log('Sign Up with Apple');
   };
+
   const handleConnectWithFacebook = () => {
     console.log('Connect with Facebook');
   };
-  const handleContinue = async () => {
-    let valid = true;
 
-    setEmailError('');
+  const handleContinue = async () => {
+    setEmailOrUsernameError('');
     setPasswordError('');
 
-    if (!email) {
-      setEmailError('Please enter a username or email');
+    let valid = true;
+
+    if (!emailOrUsername) {
+      setEmailOrUsernameError('Please enter an email or username');
       valid = false;
     }
 
@@ -84,15 +87,50 @@ const SigninScreen = ({ navigation }) => {
     }
 
     if (valid) {
+      setLoading(true);
       try {
-        // Simulate authentication
-        const user = { email, password }; // Mock user object
-        await AsyncStorage.setItem('userSession', JSON.stringify(user));
-        console.log('User logged in');
-        navigation.navigate('HomeScreen');
+        // Check if emailOrUsername is an email or username
+        let user;
+        if (emailOrUsername.includes('@')) {
+          // Handle email login
+          user = await auth().signInWithEmailAndPassword(emailOrUsername, password);
+        } else {
+          // Handle username login
+          const userRef = firestore().collection('users').doc('email'); // Adjust collection path as needed
+          const userDoc = await userRef.get();
+          const registeredUsers = userDoc.data()?.RegisteredUsers || [];
+
+          const registeredUser = registeredUsers.find((u) => u.name === emailOrUsername);
+
+          if (registeredUser) {
+            user = await auth().signInWithEmailAndPassword(registeredUser.email, password);
+          } else {
+            setEmailOrUsernameError('Username does not exist.');
+            valid = false;
+          }
+        }
+
+        if (valid && user) {
+          console.log('User signed in successfully!', user);
+          // Save user session to AsyncStorage
+          await AsyncStorage.setItem('userSession', JSON.stringify(user.user));
+
+          // Navigate to HomeScreen only after successful sign in
+          navigation.navigate('HomeScreen');
+        }
       } catch (error) {
-        console.error(error);
-        Alert.alert('Error', 'There was a problem logging in.');
+        // Handle errors
+        if (error.code === 'auth/email-already-in-use') {
+          setEmailOrUsernameError('That email address is already in use!');
+        } else if (error.code === 'auth/invalid-email') {
+          setEmailOrUsernameError('That email address is invalid!');
+        } else if (error.code === 'auth/wrong-password') {
+          setPasswordError('Incorrect password!');
+        } else {
+          console.error(error);
+        }
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -115,10 +153,7 @@ const SigninScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <LinearGradient
-        colors={['#212223', '#212223']}
-        style={styles.gradient}
-      />
+      <LinearGradient colors={['#212223', '#212223']} style={styles.gradient} />
       <TouchableOpacity style={styles.goBackButton} onPress={handleGoBack}>
         <Icon name="chevron-up" size={20} color="#7e7e7e" />
         <Text style={styles.goback}>Go back</Text>
@@ -130,29 +165,29 @@ const SigninScreen = ({ navigation }) => {
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.heading}>Welcome to <Text style={styles.pk}>Pk</Text>fiverr<Text style={styles.dot}>.</Text></Text>
-            <Text style={styles.subtitle}>Please enter your registration email and password.</Text>
+            <Text style={styles.subtitle}>Please enter your registration email or username and password.</Text>
           </View>
           <View style={styles.inputContainer}>
             <View style={styles.inputWrapper}>
               <TextInput
-                style={[styles.input, emailError ? styles.errorInput : null]}
+                style={[styles.input, emailOrUsernameError ? styles.errorInput : null]}
                 placeholder="Email or Username"
                 placeholderTextColor="#7e7e7e"
-                value={email}
+                value={emailOrUsername}
                 onChangeText={(text) => {
-                  setEmail(text);
+                  setEmailOrUsername(text);
                   if (text) {
-                    setEmailError('');
+                    setEmailOrUsernameError('');
                   }
                 }}
               />
-              {email ? (
-                <TouchableOpacity style={styles.clearButton} onPress={() => clearText(setEmail)}>
+              {emailOrUsername ? (
+                <TouchableOpacity style={styles.clearButton} onPress={() => clearText(setEmailOrUsername)}>
                   <Icon2 name="cancel" size={16} color="#616060" />
                 </TouchableOpacity>
               ) : null}
             </View>
-            {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+            {emailOrUsernameError ? <Text style={styles.errorText}>{emailOrUsernameError}</Text> : null}
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[styles.input, passwordError ? styles.errorInput : null]}
@@ -176,8 +211,8 @@ const SigninScreen = ({ navigation }) => {
             {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleContinue}>
-              <Text style={styles.buttonText}>Continue</Text>
+            <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleContinue} disabled={loading}>
+              <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Continue'}</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.orText}>Or via social networks</Text>
@@ -208,6 +243,7 @@ const SigninScreen = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

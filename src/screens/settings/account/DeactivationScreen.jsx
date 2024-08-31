@@ -61,7 +61,6 @@ const DeactivationScreen = ({ navigation }) => {
     );
 };
 
-// Define styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,

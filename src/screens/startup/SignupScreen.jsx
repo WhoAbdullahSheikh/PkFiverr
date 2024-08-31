@@ -78,7 +78,7 @@ const SignupScreen = ({ navigation }) => {
   };
 
   const handleSignUpWithEmail = () => {
-    navigation.navigate('SignUpWithEmail');
+    navigation.navigate('EmailSignup');
   };
 
   const handleGoBack = () => {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 30 : 90,
   },
   logo: {
-    width: Platform.OS === 'ios' ? 60 : 45,
+    width: Platform.OS === 'ios' ? 60 : 45, 
     height: Platform.OS === 'ios' ? 60 : 45,
     borderRadius: 40,
   },

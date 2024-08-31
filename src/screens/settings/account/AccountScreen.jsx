@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     SafeAreaView,
     ScrollView,
-    Alert,
+    Modal,
+    TouchableWithoutFeedback,
     Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const AccountScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -36,22 +38,25 @@ const AccountScreen = ({ navigation }) => {
         fetchUserInfo();
     }, []);
 
-    const handleLogout = async () => {
-        Alert.alert('Logout', 'Are you sure you want to logout?', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Logout',
-                onPress: async () => {
-                    try {
-                        await AsyncStorage.removeItem('userSession');
-                        navigation.navigate('Signin');
-                    } catch (error) {
-                        console.log('Failed to log out:', error);
-                    }
-                },
-            },
-        ]);
+    const handleLogout = () => {
+        setModalVisible(true); // Show the custom modal
     };
+
+    const confirmLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('userSession');
+            setModalVisible(false);
+            navigation.navigate('Signin');
+        } catch (error) {
+            console.log('Failed to log out:', error);
+            setModalVisible(false);
+        }
+    };
+
+    const cancelLogout = () => {
+        setModalVisible(false); // Hide the custom modal
+    };
+
     const balancenavigate = () => {
         navigation.navigate('BalanceScreen');
     };
@@ -85,8 +90,6 @@ const AccountScreen = ({ navigation }) => {
                 {/* Account Management Section */}
                 <Text style={styles.sectionTitle}>Account management</Text>
                 <View style={styles.section}>
-
-
                     <TouchableOpacity style={styles.optionContainer} onPress={deactivationnavigate}>
                         <Text style={styles.optionText}>Deactivation and deletion</Text>
                         <Icon name="chevron-right" size={24} color="#BDBDBD" />
@@ -105,22 +108,51 @@ const AccountScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+
+            {/* Custom Logout Confirmation Modal */}
+            <Modal
+                transparent={true}
+                visible={modalVisible}
+                animationType="fade"
+                onRequestClose={cancelLogout}
+            >
+                <TouchableWithoutFeedback onPress={cancelLogout}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Logout Confirmation</Text>
+                                <Text style={styles.modalMessage}>Are you sure you want to logout?</Text>
+                                <View style={styles.modalButtons}>
+                                    <TouchableOpacity
+                                        style={styles.cancelButton}
+                                        onPress={cancelLogout}
+                                    >
+                                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.confirmButton}
+                                        onPress={confirmLogout}
+                                    >
+                                        <Text style={styles.confirmButtonText}>Logout</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
         </SafeAreaView>
     );
 };
-
-export default AccountScreen;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#121213',
-
     },
     contentContainer: {
         marginTop: 0,
         padding: 0,
-
     },
     section: {
         backgroundColor: '#222324',
@@ -180,4 +212,59 @@ const styles = StyleSheet.create({
         color: '#da5d5d',
         fontFamily: 'Raleway-Regular',
     },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: '#222324',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: Platform.OS === 'ios' ? 22 : 18,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        marginBottom: 10,
+    },
+    modalMessage: {
+        fontSize: 16,
+        color: '#FFFFFF',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    cancelButton: {
+        flex: 1,
+        backgroundColor: '#444444',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    cancelButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+    },
+    confirmButton: {
+        flex: 1,
+        backgroundColor: '#da5d5d',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    confirmButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+    },
 });
+
+export default AccountScreen;

@@ -25,6 +25,7 @@ import InterestSelectionScreen from '../interest/InterestSelectionScreen';
 import BalanceScreen from '../settings/account/BalanceScreen';
 import DeactivationScreen from '../settings/account/DeactivationScreen';
 import ConfirmDelectionScreen from '../settings/account/ConfirmDelectionScreen';
+import EmailSignup from '../startup/EmailSignup';
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,15 @@ const AppNavigator = () => {
         <Stack.Screen
           name="Signup"
           component={SignupScreen}
+          options={{
+            headerShown: false,
+            headerLeft: () => null,
+            gestureEnabled: false,
+          }}
+        />
+         <Stack.Screen
+          name="EmailSignup"
+          component={EmailSignup}
           options={{
             headerShown: false,
             headerLeft: () => null,

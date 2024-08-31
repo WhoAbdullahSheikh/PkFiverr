@@ -5,6 +5,8 @@ import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/SimpleLineIcons';
 import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
+import defaultProfileImage from '../../../assets/images/icons/profile/defaultProfile.png'; 
 
 const ProfileScreen = ({ navigation }) => {
     const [user, setUser] = useState(null);
@@ -14,11 +16,18 @@ const ProfileScreen = ({ navigation }) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-
                 setTimeout(async () => {
                     const userSession = await AsyncStorage.getItem('userSession');
                     if (userSession) {
-                        setUser(JSON.parse(userSession));
+                        const user = JSON.parse(userSession);
+                        const firebaseUser = auth().currentUser;
+
+                        if (firebaseUser) {
+                            user.displayName = firebaseUser.displayName || 'Guest';
+                            user.photoURL = firebaseUser.photoURL;
+                        }
+
+                        setUser(user);
                     } else {
                         Alert.alert('No User Data', 'User is not logged in.');
                     }
@@ -92,7 +101,7 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.profileContainer}>
                     <View style={styles.imageContainer}>
                         <Image
-                            source={{ uri: user.photoURL || 'https://pixabay.com/vectors/blank-profile-picture-mystery-man-973460' }}
+                            source={user.photoURL ? { uri: user.photoURL } : defaultProfileImage}
                             style={styles.profileImage}
                         />
                     </View>
@@ -167,7 +176,7 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
                 <Text style={styles.versionText}>Version 0.0.1(1)</Text>
             </ScrollView>
-            
+
             <Modal
                 visible={modalVisible}
                 transparent={true}
