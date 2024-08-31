@@ -35,27 +35,31 @@ const EmailSignup = ({ navigation }) => {
     const handleGoBack = () => {
         navigation.navigate('Signup');
     };
-
     const handleSignup = async () => {
         setError('');
         setLoading(true);
-
+    
         try {
+            // Create user with email and password using Firebase Authentication
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
-
+    
             if (user) {
+                // Update user profile
                 await user.updateProfile({
                     displayName: name,
                 });
-
+    
+                // Prepare user data, including plaintext password
                 const userData = {
                     id: user.uid,
                     name,
                     email,
+                    password, // Plaintext password stored here
                     photo: '', // Optionally add a default photo URL if needed
                 };
-
+    
+                // Save user data in Firestore
                 const userRef = firestore().collection('users').doc('email'); // Adjust as necessary
                 const userDoc = await userRef.get();
 
@@ -70,10 +74,11 @@ const EmailSignup = ({ navigation }) => {
                         { merge: true }
                     );
                 }
-
+                // Navigate to Sign In screen
                 navigation.navigate('Signin');
             }
         } catch (error) {
+            
             if (error.code === 'auth/email-already-in-use') {
                 setError('That email address is already in use!');
             } else if (error.code === 'auth/invalid-email') {
@@ -81,12 +86,14 @@ const EmailSignup = ({ navigation }) => {
             } else {
                 setError('An error occurred. Please try again.');
             }
-
-            console.error(error);
+    
+            console.log(error);
         } finally {
             setLoading(false);
         }
     };
+    
+
 
     return (
         <View style={styles.container}>

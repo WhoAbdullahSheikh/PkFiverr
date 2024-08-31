@@ -1,0 +1,15 @@
+{
+    "react-native": {
+      "config": {
+        "apiKey": "AIzaSyDzMYdK_CtduXAhovb5UGHczQbrdjLhW34",
+        "authDomain": "pkfiverr-750f3.firebaseapp.com",
+        "databaseURL": "https://pkfiverr-750f3.firebaseio.com",
+        "projectId": "pkfiverr-750f3",
+        "storageBucket": "pkfiverr-750f3.appspot.com",
+        "messagingSenderId": "942835851882",
+        "appId":"1:942835851882:web:660ae841c5c1f11e9fe013",
+        "measurementId":  "G-G7KMT9BGRV"
+      }
+    }
+  }
+  

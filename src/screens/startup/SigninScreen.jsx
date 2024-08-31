@@ -37,15 +37,32 @@ const SigninScreen = ({ navigation }) => {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const { idToken } = await GoogleSignin.signIn();
-
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
       const userCredential = await auth().signInWithCredential(googleCredential);
       const user = userCredential.user;
-      const userRef = firestore().collection('users').doc('google');
-      const userDoc = await userRef.get();
-      const registeredUsers = userDoc.data()?.RegisteredUsers || [];
 
-      if (registeredUsers.some((u) => u.email === user.email)) {
+      const googleRef = firestore().collection('users').doc('google');
+      const emailRef = firestore().collection('users').doc('email');
+
+      const [googleDoc, emailDoc] = await Promise.all([googleRef.get(), emailRef.get()]);
+
+      const googleUsers = googleDoc.data()?.RegisteredUsers || [];
+      const emailUsers = emailDoc.data()?.RegisteredUsers || [];
+
+      // Define email from the user object
+      const email = user.email?.toLowerCase() || '';
+
+      // Check if the user email is already registered with another provider
+      const existingUser = [...googleUsers, ...emailUsers].some((u) => u.email.toLowerCase() === email);
+
+      if (existingUser) {
+        // Link Google account with existing email/password account
+        const currentUser = auth().currentUser;
+        if (currentUser) {
+          await currentUser.linkWithCredential(googleCredential);
+        }
+
         // Save user session to AsyncStorage
         await AsyncStorage.setItem('userSession', JSON.stringify(user));
         navigation.navigate('HomeScreen');
@@ -56,18 +73,18 @@ const SigninScreen = ({ navigation }) => {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         Alert.alert('Alert', 'You canceled the Google Sign-in process.');
       } else {
-        console.error(error);
+        console.error('Google Sign-In Error:', error);
         Alert.alert('Error', 'There was a problem with Google Sign-In.');
       }
     }
   };
 
   const handleSignUpWithApple = () => {
-    console.log('Sign Up with Apple');
+    Alert.alert("Attention!", "This authentication method is not yet supported. Soon it will be functional");
   };
 
   const handleConnectWithFacebook = () => {
-    console.log('Connect with Facebook');
+    Alert.alert("Attention!", "This authentication method is not yet supported. Soon it will be functional");
   };
 
   const handleContinue = async () => {
@@ -89,51 +106,57 @@ const SigninScreen = ({ navigation }) => {
     if (valid) {
       setLoading(true);
       try {
-        // Check if emailOrUsername is an email or username
-        let user;
-        if (emailOrUsername.includes('@')) {
-          // Handle email login
-          user = await auth().signInWithEmailAndPassword(emailOrUsername, password);
-        } else {
-          // Handle username login
-          const userRef = firestore().collection('users').doc('email'); // Adjust collection path as needed
-          const userDoc = await userRef.get();
-          const registeredUsers = userDoc.data()?.RegisteredUsers || [];
-
-          const registeredUser = registeredUsers.find((u) => u.name === emailOrUsername);
-
-          if (registeredUser) {
-            user = await auth().signInWithEmailAndPassword(registeredUser.email, password);
-          } else {
-            setEmailOrUsernameError('Username does not exist.');
-            valid = false;
-          }
+        // Fetch the user document from Firestore
+        const userRef = firestore().collection('users').doc('email'); // Adjust this as needed
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+          setEmailOrUsernameError('User document not found.');
+          return;
         }
 
-        if (valid && user) {
-          console.log('User signed in successfully!', user);
-          // Save user session to AsyncStorage
-          await AsyncStorage.setItem('userSession', JSON.stringify(user.user));
+        const registeredUsers = userDoc.data()?.RegisteredUsers || [];
 
-          // Navigate to HomeScreen only after successful sign in
-          navigation.navigate('HomeScreen');
+        // Find the user based on email or username
+        const registeredUser = registeredUsers.find((u) =>
+          u.email === emailOrUsername || u.name === emailOrUsername
+        );
+
+        if (registeredUser) {
+          // Verify the password
+          if (registeredUser.password === password) {
+            // Sign in with Firebase Authentication
+            try {
+              const userCredential = await auth().signInWithEmailAndPassword(registeredUser.email, password);
+              const user = userCredential.user;
+
+              console.log('User signed in successfully!', user);
+
+              // Save user session to AsyncStorage
+              await AsyncStorage.setItem('userSession', JSON.stringify(user));
+
+              // Navigate to HomeScreen only after successful sign-in
+              navigation.navigate('HomeScreen');
+              setEmailOrUsername('');
+              setPassword('');
+            } catch (error) {
+              console.error('Firebase Auth Error:', error);
+              setPasswordError('Authentication failed. Please check your credentials.');
+            }
+          } else {
+            setPasswordError('Incorrect password!');
+          }
+        } else {
+          setEmailOrUsernameError('User not found.');
         }
       } catch (error) {
-        // Handle errors
-        if (error.code === 'auth/email-already-in-use') {
-          setEmailOrUsernameError('That email address is already in use!');
-        } else if (error.code === 'auth/invalid-email') {
-          setEmailOrUsernameError('That email address is invalid!');
-        } else if (error.code === 'auth/wrong-password') {
-          setPasswordError('Incorrect password!');
-        } else {
-          console.error(error);
-        }
+        console.error('Firestore Error:', error);
+        setEmailOrUsernameError('An error occurred. Please try again.');
       } finally {
         setLoading(false);
       }
     }
   };
+
 
   const handleGoBack = () => {
     navigation.navigate('Startup');

@@ -30,15 +30,26 @@ const SignupScreen = ({ navigation }) => {
       // Signing in with the credential
       await auth().signInWithCredential(googleCredential);
 
-      // Get reference to the 'users' collection
-      const userRef = firestore().collection('users').doc('google');
-      const userDoc = await userRef.get();
+      const email = user.email.toLowerCase(); // Convert to lowercase
 
-      // Extract the RegisteredUsers array or set it to an empty array if not found
-      const registeredUsers = userDoc.data()?.RegisteredUsers || [];
+      // Check if the email is already in Firebase Authentication
+      const signInMethods = await auth().fetchSignInMethodsForEmail(email);
+      if (signInMethods.length > 0) {
+        Alert.alert('Already Registered', 'This account is already registered. Please try to sign in');
+        return;
+      }
 
-      // Check if the user's email is already registered
-      const isAlreadyRegistered = registeredUsers.some((u) => u.email === user.email);
+      // Check both Firestore documents for the registered email
+      const googleRef = firestore().collection('users').doc('google');
+      const emailRef = firestore().collection('users').doc('email');
+
+      const [googleDoc, emailDoc] = await Promise.all([googleRef.get(), emailRef.get()]);
+
+      const googleUsers = googleDoc.data()?.RegisteredUsers || [];
+      const emailUsers = emailDoc.data()?.RegisteredUsers || [];
+
+      // Convert all stored emails to lowercase for comparison
+      const isAlreadyRegistered = [...googleUsers, ...emailUsers].some((u) => u.email.toLowerCase() === email);
 
       if (isAlreadyRegistered) {
         Alert.alert('Already Registered', 'This account is already registered. Please try to sign in');
@@ -47,16 +58,18 @@ const SignupScreen = ({ navigation }) => {
         const userData = {
           id: user.id,
           name: user.name,
-          email: user.email,
+          email: email,
           photo: user.photo,
         };
 
-        await userRef.set(
-          {
-            RegisteredUsers: firestore.FieldValue.arrayUnion(userData),
-          },
-          { merge: true }
-        );
+        await Promise.all([
+          googleRef.set(
+            {
+              RegisteredUsers: firestore.FieldValue.arrayUnion(userData),
+            },
+            { merge: true }
+          ),
+        ]);
 
         Alert.alert('Registration Successful', 'Your account has been registered successfully.');
 
@@ -70,11 +83,11 @@ const SignupScreen = ({ navigation }) => {
   }
 
   const handleSignUpWithApple = () => {
-    console.log('Sign Up with Apple');
+    Alert.alert("Attention!", "This authentication method is not yet supported. Soon it will be functional");
   };
 
   const handleConnectWithFacebook = () => {
-    console.log('Connect with Facebook');
+    Alert.alert("Attention!", "This authentication method is not yet supported. Soon it will be functional");
   };
 
   const handleSignUpWithEmail = () => {
@@ -113,7 +126,7 @@ const SignupScreen = ({ navigation }) => {
             <Image source={require('../../../assets/images/socials/facebook.png')} style={styles.icon} />
             <Text style={[styles.buttonText, styles.facebookButtonText]}>Connect With Facebook</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.googleButton]} onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}>
+          <TouchableOpacity style={[styles.button, styles.googleButton]} onPress={onGoogleButtonPress}>
             <Image source={require('../../../assets/images/socials/google.png')} style={styles.icon} />
             <Text style={[styles.buttonText, styles.googleButtonText]}>Connect With Google</Text>
           </TouchableOpacity>
@@ -177,7 +190,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 30 : 90,
   },
   logo: {
-    width: Platform.OS === 'ios' ? 60 : 45, 
+    width: Platform.OS === 'ios' ? 60 : 45,
     height: Platform.OS === 'ios' ? 60 : 45,
     borderRadius: 40,
   },
