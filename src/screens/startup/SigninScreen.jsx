@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Platform, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Platform, ScrollView, KeyboardAvoidingView, Alert, Modal, Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
@@ -14,6 +14,8 @@ const SigninScreen = ({ navigation }) => {
   const [emailOrUsernameError, setEmailOrUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
     const checkSession = async () => {
@@ -30,6 +32,14 @@ const SigninScreen = ({ navigation }) => {
     GoogleSignin.configure({
       webClientId: '942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com',
     });
+
+    // Cleanup function to reset the state
+    return () => {
+      setEmailOrUsername('');
+      setPassword('');
+      setEmailOrUsernameError('');
+      setPasswordError('');
+    };
   }, [navigation]);
 
   const onGoogleButtonPress = async () => {
@@ -50,20 +60,16 @@ const SigninScreen = ({ navigation }) => {
       const googleUsers = googleDoc.data()?.RegisteredUsers || [];
       const emailUsers = emailDoc.data()?.RegisteredUsers || [];
 
-      // Define email from the user object
       const email = user.email?.toLowerCase() || '';
 
-      // Check if the user email is already registered with another provider
       const existingUser = [...googleUsers, ...emailUsers].some((u) => u.email.toLowerCase() === email);
 
       if (existingUser) {
-        // Link Google account with existing email/password account
         const currentUser = auth().currentUser;
         if (currentUser) {
           await currentUser.linkWithCredential(googleCredential);
         }
 
-        // Save user session to AsyncStorage
         await AsyncStorage.setItem('userSession', JSON.stringify(user));
         navigation.navigate('HomeScreen');
       } else {
@@ -106,57 +112,51 @@ const SigninScreen = ({ navigation }) => {
     if (valid) {
       setLoading(true);
       try {
-        // Fetch the user document from Firestore
-        const userRef = firestore().collection('users').doc('email'); // Adjust this as needed
-        const userDoc = await userRef.get();
-        if (!userDoc.exists) {
-          setEmailOrUsernameError('User document not found.');
-          return;
+        let user;
+
+        if (emailOrUsername.includes('@')) {
+          user = await auth().signInWithEmailAndPassword(emailOrUsername, password);
+        } else {
+          const userRef = firestore().collection('users').doc('email');
+          const userDoc = await userRef.get();
+          const registeredUsers = userDoc.data()?.RegisteredUsers || [];
+
+          const registeredUser = registeredUsers.find((u) => u.name.toLowerCase() === emailOrUsername.toLowerCase());
+
+          if (registeredUser) {
+            user = await auth().signInWithEmailAndPassword(registeredUser.email, password);
+          } else {
+            setEmailOrUsernameError('Username does not exist.');
+            valid = false;
+          }
         }
 
-        const registeredUsers = userDoc.data()?.RegisteredUsers || [];
-
-        // Find the user based on email or username
-        const registeredUser = registeredUsers.find((u) =>
-          u.email === emailOrUsername || u.name === emailOrUsername
-        );
-
-        if (registeredUser) {
-          // Verify the password
-          if (registeredUser.password === password) {
-            // Sign in with Firebase Authentication
-            try {
-              const userCredential = await auth().signInWithEmailAndPassword(registeredUser.email, password);
-              const user = userCredential.user;
-
-              console.log('User signed in successfully!', user);
-
-              // Save user session to AsyncStorage
-              await AsyncStorage.setItem('userSession', JSON.stringify(user));
-
-              // Navigate to HomeScreen only after successful sign-in
-              navigation.navigate('HomeScreen');
-              setEmailOrUsername('');
-              setPassword('');
-            } catch (error) {
-              console.error('Firebase Auth Error:', error);
-              setPasswordError('Authentication failed. Please check your credentials.');
-            }
-          } else {
-            setPasswordError('Incorrect password!');
-          }
-        } else {
-          setEmailOrUsernameError('User not found.');
+        if (valid && user) {
+          console.log('User signed in successfully!', user);
+          await AsyncStorage.setItem('userSession', JSON.stringify(user.user));
+          navigation.navigate('HomeScreen');
+          setEmailOrUsername('');
+          setPassword('');
         }
       } catch (error) {
-        console.error('Firestore Error:', error);
-        setEmailOrUsernameError('An error occurred. Please try again.');
+        let message = 'Invalid Username or Password';
+        if (error.code === 'auth/user-not-found') {
+          message = 'User not found.';
+        } else if (error.code === 'auth/wrong-password') {
+          message = 'Incorrect password!';
+        } else if (error.code === 'auth/user-disabled') {
+          message = 'Your account has been disabled.';
+        } else if (error.code === 'auth/expired-action-code') {
+          message = 'The password has expired or needs to be reset.';
+        }
+        setModalMessage(message);
+        setModalVisible(true);
+        console.log('Sign In Error:', error);
       } finally {
         setLoading(false);
       }
     }
   };
-
 
   const handleGoBack = () => {
     navigation.navigate('Startup');
@@ -173,7 +173,6 @@ const SigninScreen = ({ navigation }) => {
   const clearText = (setter) => {
     setter('');
   };
-
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <LinearGradient colors={['#212223', '#212223']} style={styles.gradient} />
@@ -263,6 +262,31 @@ const SigninScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
+
+      {/* Modal for displaying error messages */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Icon name="alert-circle" size={34} color="#FF6F61" style={styles.modalTitleIcon} />
+            <View style={styles.modalTitleContainer}>
+
+              <Text style={styles.modalTitle}>Whopsssss</Text>
+            </View>
+            <Text style={styles.modalMessage}>{modalMessage}</Text>
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -456,7 +480,6 @@ const styles = StyleSheet.create({
     width: '48%',
     marginTop: 2,
     marginBottom: 80,
-
   },
   footerButtonsContainer: {
     position: 'absolute',
@@ -478,6 +501,52 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: Platform.OS === 'ios' ? 16 : 14,
     fontFamily: 'Montserrat-Black',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  modalTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  modalTitleIcon: {
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: Platform.OS === 'ios' ? 22 : 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 10,
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: '#222324',
+    alignItems: 'center',
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginBottom: 20,
+    fontFamily: 'Montserrat-Regular',
+  },
+
+  modalButton: {
+    padding: 10,
+    backgroundColor: '#28b96d',
+    borderRadius: 5,
+    width: '100%',
+  },
+  modalButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
 

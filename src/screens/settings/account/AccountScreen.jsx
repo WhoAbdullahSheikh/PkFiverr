@@ -26,7 +26,7 @@ const AccountScreen = ({ navigation }) => {
                 if (userSession) {
                     const user = JSON.parse(userSession);
                     setEmail(user.email);
-                    setFullName(user.displayName); // Set the full name
+                    setFullName(user.displayName); 
                 } else {
                     Alert.alert('No User Data', 'User is not logged in.');
                 }
@@ -39,7 +39,7 @@ const AccountScreen = ({ navigation }) => {
     }, []);
 
     const handleLogout = () => {
-        setModalVisible(true); // Show the custom modal
+        setModalVisible(true); 
     };
 
     const confirmLogout = async () => {
@@ -54,7 +54,7 @@ const AccountScreen = ({ navigation }) => {
     };
 
     const cancelLogout = () => {
-        setModalVisible(false); // Hide the custom modal
+        setModalVisible(false); 
     };
 
     const balancenavigate = () => {
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#121213',
     },
     contentContainer: {
-        marginTop: 0,
+        marginTop: 10,
         padding: 0,
     },
     section: {

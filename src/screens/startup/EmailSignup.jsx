@@ -35,50 +35,52 @@ const EmailSignup = ({ navigation }) => {
     const handleGoBack = () => {
         navigation.navigate('Signup');
     };
+
     const handleSignup = async () => {
         setError('');
         setLoading(true);
-    
+
         try {
             // Create user with email and password using Firebase Authentication
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
-    
+
             if (user) {
                 // Update user profile
                 await user.updateProfile({
                     displayName: name,
                 });
-    
-                // Prepare user data, including plaintext password
+
+                // Prepare user data without storing plaintext password
                 const userData = {
                     id: user.uid,
                     name,
                     email,
-                    password, // Plaintext password stored here
                     photo: '', // Optionally add a default photo URL if needed
                 };
-    
-                // Save user data in Firestore
-                const userRef = firestore().collection('users').doc('email'); // Adjust as necessary
-                const userDoc = await userRef.get();
 
-                const registeredUsers = userDoc.data()?.RegisteredUsers || [];
-                const isAlreadyRegistered = registeredUsers.some((u) => u.email === email);
+                // Get a reference to the 'email' document in the 'users' collection
+                const userRef = firestore().collection('users').doc('email');
 
-                if (!isAlreadyRegistered) {
-                    await userRef.set(
-                        {
-                            RegisteredUsers: firestore.FieldValue.arrayUnion(userData),
-                        },
-                        { merge: true }
-                    );
-                }
+                // Get the current data from the document
+                const doc = await userRef.get();
+                const data = doc.data() || {};
+
+                // Get the existing array or initialize an empty one
+                const usersArray = data.RegisteredUsers || [];
+
+                // Add the new user data to the array
+                usersArray.push(userData);
+
+                // Update the Firestore document with the new array
+                await userRef.set({
+                    RegisteredUsers: usersArray,
+                });
+
                 // Navigate to Sign In screen
                 navigation.navigate('Signin');
             }
         } catch (error) {
-            
             if (error.code === 'auth/email-already-in-use') {
                 setError('That email address is already in use!');
             } else if (error.code === 'auth/invalid-email') {
@@ -86,14 +88,12 @@ const EmailSignup = ({ navigation }) => {
             } else {
                 setError('An error occurred. Please try again.');
             }
-    
+
             console.log(error);
         } finally {
             setLoading(false);
         }
     };
-    
-
 
     return (
         <View style={styles.container}>

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Platform, ScrollView, KeyboardAvoidingView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Icon if not already imported
+import auth from '@react-native-firebase/auth'; // Import Firebase Auth
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let valid = true;
 
     // Reset error messages
@@ -17,11 +19,32 @@ const ForgotPasswordScreen = ({ navigation }) => {
     if (!email) {
       setEmailError('Please enter your email');
       valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) { // Simple email validation
+      setEmailError('Please enter a valid email address');
+      valid = false;
     }
 
     if (valid) {
-      // Handle submit action
-      console.log('Password reset link sent');
+      setLoading(true);
+      try {
+        // Send password reset email
+        await auth().sendPasswordResetEmail(email);
+        // Notify user
+        alert('Password reset link sent to your email');
+        // Navigate back to sign-in screen or another screen
+        navigation.goBack();
+      } catch (error) {
+        console.error('Error sending password reset email:', error);
+        if (error.code === 'auth/invalid-email') {
+          setEmailError('Invalid email address');
+        } else if (error.code === 'auth/user-not-found') {
+          setEmailError('No user found with this email address');
+        } else {
+          setEmailError('An error occurred. Please try again.');
+        }
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -31,10 +54,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <LinearGradient
-        colors={['#212223', '#212223']}
-        style={styles.gradient}
-      />
+      <LinearGradient colors={['#212223', '#212223']} style={styles.gradient} />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.overlay}>
           <View style={styles.headerContainer}>
@@ -42,8 +62,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
               <Icon name="arrow-back-ios" size={20} color="#FFF" />
             </TouchableOpacity>
             <Text style={styles.header}>Forgot Password</Text>
-          </View>
-          <View style={styles.textContainer}>
           </View>
           <View style={styles.inputContainer}>
             <View style={styles.inputWrapper}>
@@ -68,8 +86,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
             {emailError ? <Text style={styles.errorText}>{emailError}</Text> : <Text style={styles.noteText}>We will send you a link to reset your password.</Text>}
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Send</Text>
+            <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleSubmit} disabled={loading}>
+              <Text style={styles.buttonText}>{loading ? 'Sending...' : 'Send'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -103,13 +121,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingRight: Platform.OS === 'ios' ? 20 : 30,
     flex: 1,
-  },
-  subtitle: {
-    fontSize: Platform.OS === 'ios' ? 16 : 12,
-    color: '#FFF',
-    marginBottom: 20,
-    textAlign: 'center',
-    fontFamily: 'Montserrat-SemiBold',
   },
   inputContainer: {
     width: '92%',
