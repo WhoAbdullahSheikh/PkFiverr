@@ -33,7 +33,7 @@ const SigninScreen = ({ navigation }) => {
       webClientId: '942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com',
     });
 
-    // Cleanup function to reset the state
+    
     return () => {
       setEmailOrUsername('');
       setPassword('');

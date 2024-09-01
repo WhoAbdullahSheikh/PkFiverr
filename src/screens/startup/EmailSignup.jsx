@@ -1,36 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import debounce from 'lodash.debounce';
 
 const EmailSignup = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [nameError, setNameError] = useState('');
+    const [nameSuccess, setNameSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const renderPasswordRequirements = () => {
-        const requirements = [
-            { text: 'At least 8 characters', fulfilled: password.length >= 8 },
-            { text: 'At least 1 uppercase letter', fulfilled: /[A-Z]/.test(password) },
-            { text: 'At least 1 lowercase letter', fulfilled: /[a-z]/.test(password) },
-            { text: 'At least 1 number', fulfilled: /\d/.test(password) },
-        ];
+    const checkUsernameAvailability = useCallback(debounce(async (username) => {
+        if (username.trim() === '') {
+            setNameError('');
+            setNameSuccess('');
+            return;
+        }
 
-        return requirements.map((req, index) => (
-            <Text
-                key={index}
-                style={[
-                    styles.requirementText,
-                    { color: req.fulfilled ? '#28b96d' : 'white', fontSize: 12, },
-                ]}
-            >
-                o  {req.text}
-            </Text>
-        ));
-    };
+        try {
+            // Fetch both documents
+            const userRefEmail = firestore().collection('users').doc('email');
+            const userRefGoogle = firestore().collection('users').doc('google');
+            
+            const [docEmail, docGoogle] = await Promise.all([
+                userRefEmail.get(),
+                userRefGoogle.get()
+            ]);
+
+            const dataEmail = docEmail.data() || {};
+            const dataGoogle = docGoogle.data() || {};
+
+            const usersArrayEmail = dataEmail.RegisteredUsers || [];
+            const usersArrayGoogle = dataGoogle.RegisteredUsers || [];
+
+            // Check if username is taken in either document
+            const usernameTaken = usersArrayEmail.some((user) => user.name.toLowerCase() === username.toLowerCase()) ||
+                usersArrayGoogle.some((user) => user.name.toLowerCase() === username.toLowerCase());
+
+            if (usernameTaken) {
+                setNameError('Username is already taken');
+                setNameSuccess('');
+            } else {
+                setNameSuccess('Username is available');
+                setNameError('');
+            }
+        } catch (error) {
+            console.log('Error checking username:', error);
+        }
+    }, 500), []);
+
+    useEffect(() => {
+        checkUsernameAvailability(name);
+    }, [name, checkUsernameAvailability]);
 
     const handleGoBack = () => {
         navigation.navigate('Signup');
@@ -41,43 +66,44 @@ const EmailSignup = ({ navigation }) => {
         setLoading(true);
 
         try {
-            // Create user with email and password using Firebase Authentication
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
             if (user) {
-                // Update user profile
                 await user.updateProfile({
                     displayName: name,
                 });
 
-                // Prepare user data without storing plaintext password
                 const userData = {
                     id: user.uid,
                     name,
                     email,
-                    photo: '', // Optionally add a default photo URL if needed
+                    photo: '', 
                 };
 
-                // Get a reference to the 'email' document in the 'users' collection
-                const userRef = firestore().collection('users').doc('email');
+                // Update both documents
+                const userRefEmail = firestore().collection('users').doc('email');
+                const userRefGoogle = firestore().collection('users').doc('google');
 
-                // Get the current data from the document
-                const doc = await userRef.get();
-                const data = doc.data() || {};
+                const [docEmail, docGoogle] = await Promise.all([
+                    userRefEmail.get(),
+                    userRefGoogle.get()
+                ]);
 
-                // Get the existing array or initialize an empty one
-                const usersArray = data.RegisteredUsers || [];
+                const dataEmail = docEmail.data() || {};
+                const dataGoogle = docGoogle.data() || {};
 
-                // Add the new user data to the array
-                usersArray.push(userData);
+                const usersArrayEmail = dataEmail.RegisteredUsers || [];
+                const usersArrayGoogle = dataGoogle.RegisteredUsers || [];
 
-                // Update the Firestore document with the new array
-                await userRef.set({
-                    RegisteredUsers: usersArray,
-                });
+                usersArrayEmail.push(userData);
+                usersArrayGoogle.push(userData);
 
-                // Navigate to Sign In screen
+                await Promise.all([
+                    userRefEmail.set({ RegisteredUsers: usersArrayEmail }),
+                    userRefGoogle.set({ RegisteredUsers: usersArrayGoogle })
+                ]);
+
                 navigation.navigate('Signin');
             }
         } catch (error) {
@@ -108,6 +134,8 @@ const EmailSignup = ({ navigation }) => {
                 value={name}
                 onChangeText={setName}
             />
+            {nameError ? <Text style={[styles.errorText, { color: styles.colors.error }]}>{nameError}</Text> : null}
+            {nameSuccess ? <Text style={[styles.errorText, { color: styles.colors.success }]}>{nameSuccess}</Text> : null}
             <Text style={styles.infoText}>
                 You can't change your username, so choose wisely.
             </Text>
@@ -127,17 +155,38 @@ const EmailSignup = ({ navigation }) => {
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            {renderPasswordRequirements()}
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            {renderPasswordRequirements(password)}
+            {error ? <Text style={[styles.errorText, { color: styles.colors.error }]}>{error}</Text> : null}
             <TouchableOpacity style={styles.signupButton} onPress={handleSignup} disabled={loading}>
                 <Text style={styles.signupButtonText}>{loading ? 'Signing Up...' : 'Sign Up'}</Text>
             </TouchableOpacity>
             <Text style={styles.termsText}>
-                By joining, you agree to Fiverr's{' '}
+                By joining, you agree to PkFiverr's{' '}
                 <Text style={styles.linkText}>Terms of Service</Text>
             </Text>
         </View>
     );
+};
+
+const renderPasswordRequirements = (password = '') => {
+    const requirements = [
+        { text: 'At least 8 characters', fulfilled: password.length >= 8 },
+        { text: 'At least 1 uppercase letter', fulfilled: /[A-Z]/.test(password) },
+        { text: 'At least 1 lowercase letter', fulfilled: /[a-z]/.test(password) },
+        { text: 'At least 1 number', fulfilled: /\d/.test(password) },
+    ];
+
+    return requirements.map((req, index) => (
+        <Text
+            key={index}
+            style={[
+                styles.requirementText,
+                { color: req.fulfilled ? '#28b96d' : 'white', fontSize: 12 },
+            ]}
+        >
+            -  {req.text}
+        </Text>
+    ));
 };
 
 const styles = StyleSheet.create({
@@ -198,14 +247,20 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     linkText: {
-        color: '#28a745',
+        color: '#28b96d',
         textDecorationLine: 'none',
+        fontWeight: 'bold',
     },
     errorText: {
-        color: 'red',
         fontSize: 14,
-        textAlign: 'center',
-        marginBottom: 10,
+        textAlign: 'flex-start',
+        fontFamily: 'Montserrat-Regular',
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    colors: {
+        success: '#28b96d', // Custom success color
+        error: '#e74c3c',   // Custom error color
     },
 });
 
