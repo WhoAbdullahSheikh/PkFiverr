@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, Modal, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -13,10 +13,14 @@ const EmailSignup = ({ navigation }) => {
     const [nameError, setNameError] = useState('');
     const [nameSuccess, setNameSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
+    // Debounced function for checking username availability
     const checkUsernameAvailability = useCallback(debounce(async (username) => {
-        if (username.trim() === '') {
-            setNameError('');
+        const validationError = validateUsername(username);
+        if (validationError) {
+            setNameError(validationError);
             setNameSuccess('');
             return;
         }
@@ -42,20 +46,54 @@ const EmailSignup = ({ navigation }) => {
                 usersArrayGoogle.some((user) => user.name.toLowerCase() === username.toLowerCase());
 
             if (usernameTaken) {
-                setNameError('Username is already taken');
+                setNameError('Opss, Username is already taken');
                 setNameSuccess('');
             } else {
-                setNameSuccess('Username is available');
+                setNameSuccess('Perfect, Username is available');
                 setNameError('');
             }
         } catch (error) {
             console.log('Error checking username:', error);
         }
-    }, 500), []);
+    }, 300), []); // Reduced debounce delay to 300ms for more responsive feedback
 
+    // Validate username on input change
     useEffect(() => {
         checkUsernameAvailability(name);
     }, [name, checkUsernameAvailability]);
+
+    const validateUsername = (username) => {
+        if (username.length < 8 || username.length > 20) {
+            return 'Username must be between 8 and 20 characters';
+        }
+        if (!/^[a-zA-Z0-9]+$/.test(username)) {
+            return 'Username must be alphanumeric';
+        }
+        if (!/[a-zA-Z]/.test(username)) {
+            return 'Username must contain at least one letter';
+        }
+        if (!/\d/.test(username)) {
+            return 'Username must contain at least one number';
+        }
+        return '';
+    };
+
+    const validateForm = () => {
+        if (!name || !email || !password) {
+            setModalMessage('All fields are required.');
+            setModalVisible(true);
+            return false;
+        }
+
+        const nameValidationError = validateUsername(name);
+        if (nameValidationError) {
+            setModalMessage(nameValidationError);
+            setModalVisible(true);
+            return false;
+        }
+
+        return true;
+    };
 
     const handleGoBack = () => {
         navigation.navigate('Signup');
@@ -64,6 +102,11 @@ const EmailSignup = ({ navigation }) => {
     const handleSignup = async () => {
         setError('');
         setLoading(true);
+
+        if (!validateForm()) {
+            setLoading(false);
+            return;
+        }
 
         try {
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
@@ -134,6 +177,7 @@ const EmailSignup = ({ navigation }) => {
                 value={name}
                 onChangeText={setName}
             />
+            {/* Display username validation messages */}
             {nameError ? <Text style={[styles.errorText, { color: styles.colors.error }]}>{nameError}</Text> : null}
             {nameSuccess ? <Text style={[styles.errorText, { color: styles.colors.success }]}>{nameSuccess}</Text> : null}
             <Text style={styles.infoText}>
@@ -164,6 +208,30 @@ const EmailSignup = ({ navigation }) => {
                 By joining, you agree to PkFiverr's{' '}
                 <Text style={styles.linkText}>Terms of Service</Text>
             </Text>
+            {/* Modal for displaying errors */}
+            <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Icon name="alert-circle" size={34} color="#FF6F61" style={styles.modalTitleIcon} />
+            <View style={styles.modalTitleContainer}>
+
+              <Text style={styles.modalTitle}>Whopsssss</Text>
+            </View>
+            <Text style={styles.modalMessage}>{modalMessage}</Text>
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
         </View>
     );
 };
@@ -262,6 +330,53 @@ const styles = StyleSheet.create({
         success: '#28b96d', // Custom success color
         error: '#e74c3c',   // Custom error color
     },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      },
+      modalTitleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+      },
+      modalTitleIcon: {
+        justifyContent: 'center',
+        marginBottom: 10,
+      },
+      modalTitle: {
+        fontSize: Platform.OS === 'ios' ? 22 : 18,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        marginBottom: 10,
+      },
+      modalContent: {
+        width: '80%',
+        padding: 20,
+        borderRadius: 10,
+        backgroundColor: '#222324',
+        alignItems: 'center',
+      },
+      modalMessage: {
+        fontSize: 16,
+        color: '#FFFFFF',
+        marginBottom: 20,
+        textAlign: 'center',
+        fontFamily: 'Montserrat-Regular',
+      },
+    
+      modalButton: {
+        padding: 10,
+        backgroundColor: '#28b96d',
+        borderRadius: 5,
+        width: '100%',
+      },
+      modalButtonText: {
+        color: '#fff',
+        textAlign: 'center',
+        fontWeight: 'bold',
+      },
 });
 
 export default EmailSignup;
