@@ -33,7 +33,7 @@ const SigninScreen = ({ navigation }) => {
       webClientId: '942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com',
     });
 
-    
+
     return () => {
       setEmailOrUsername('');
       setPassword('');
@@ -44,14 +44,21 @@ const SigninScreen = ({ navigation }) => {
 
   const onGoogleButtonPress = async () => {
     try {
+      // Sign out the user if they are already signed in with Google
       await GoogleSignin.signOut();
+
+      // Ensure the device has the necessary Google Play Services
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+      // Sign in with Google and get the idToken
       const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
+      // Try signing in with the Google credential
       const userCredential = await auth().signInWithCredential(googleCredential);
       const user = userCredential.user;
 
+      // Fetch user data from Firestore
       const googleRef = firestore().collection('users').doc('google');
       const emailRef = firestore().collection('users').doc('email');
 
@@ -65,19 +72,19 @@ const SigninScreen = ({ navigation }) => {
       const existingUser = [...googleUsers, ...emailUsers].some((u) => u.email.toLowerCase() === email);
 
       if (existingUser) {
-        const currentUser = auth().currentUser;
-        if (currentUser) {
-          await currentUser.linkWithCredential(googleCredential);
-        }
-
+        // User is already registered; proceed to the home screen
         await AsyncStorage.setItem('userSession', JSON.stringify(user));
         navigation.navigate('HomeScreen');
       } else {
+        // If the user is not registered, prompt registration
         Alert.alert('Registration Required', 'Please register first.');
       }
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         Alert.alert('Alert', 'You canceled the Google Sign-in process.');
+      } else if (error.code === 'auth/provider-already-linked') {
+        // Handle case where the provider is already linked
+        Alert.alert('Error', 'The Google account is already linked to another user.');
       } else {
         console.error('Google Sign-In Error:', error);
         Alert.alert('Error', 'There was a problem with Google Sign-In.');

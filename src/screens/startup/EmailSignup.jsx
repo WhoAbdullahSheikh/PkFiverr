@@ -102,51 +102,51 @@ const EmailSignup = ({ navigation }) => {
     const handleSignup = async () => {
         setError('');
         setLoading(true);
-
-        if (!validateForm()) {
-            setLoading(false);
-            return;
-        }
-
+    
         try {
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
-
+    
             if (user) {
+                // Make sure user is authenticated
+                if (!auth().currentUser) {
+                    throw new Error('User is not authenticated');
+                }
+    
                 await user.updateProfile({
                     displayName: name,
                 });
-
+    
                 const userData = {
                     id: user.uid,
                     name,
                     email,
                     photo: '', 
                 };
-
+    
                 // Update both documents
                 const userRefEmail = firestore().collection('users').doc('email');
-                const userRefGoogle = firestore().collection('users').doc('google');
-
+                const userRefGoogle = firestore().collection('users').doc('google');                
+    
                 const [docEmail, docGoogle] = await Promise.all([
                     userRefEmail.get(),
                     userRefGoogle.get()
                 ]);
-
+    
                 const dataEmail = docEmail.data() || {};
                 const dataGoogle = docGoogle.data() || {};
-
+    
                 const usersArrayEmail = dataEmail.RegisteredUsers || [];
                 const usersArrayGoogle = dataGoogle.RegisteredUsers || [];
-
+    
                 usersArrayEmail.push(userData);
                 usersArrayGoogle.push(userData);
-
+    
                 await Promise.all([
                     userRefEmail.set({ RegisteredUsers: usersArrayEmail }),
                     userRefGoogle.set({ RegisteredUsers: usersArrayGoogle })
                 ]);
-
+    
                 navigation.navigate('Signin');
             }
         } catch (error) {
@@ -157,13 +157,13 @@ const EmailSignup = ({ navigation }) => {
             } else {
                 setError('An error occurred. Please try again.');
             }
-
+    
             console.log(error);
         } finally {
             setLoading(false);
         }
     };
-
+    
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.goBackButton} onPress={handleGoBack}>
