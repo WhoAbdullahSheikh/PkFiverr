@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ConfirmDelectionScreen = ({ navigation }) => {
     const handleDeletion = async () => {
@@ -13,24 +14,43 @@ const ConfirmDelectionScreen = ({ navigation }) => {
         }
 
         try {
-            const userEmail = user.email;
+            const userEmail = user.email.toLowerCase(); // Convert email to lowercase
 
-            // Reference to the specific document in the 'users' collection
+            // References to the documents in the 'users' collection
             const googleDocRef = firestore().collection('users').doc('google');
-            const doc = await googleDocRef.get();
+            const emailDocRef = firestore().collection('users').doc('email');
 
-            if (!doc.exists) {
-                Alert.alert('Error', 'Document does not exist.');
+            // Fetch both documents
+            const [googleDoc, emailDoc] = await Promise.all([
+                googleDocRef.get(),
+                emailDocRef.get()
+            ]);
+
+            if (!googleDoc.exists) {
+                Alert.alert('Error', 'Google document does not exist.');
                 return;
             }
 
-            const data = doc.data();
-            const registeredUsers = data.RegisteredUsers || [];
-            
-            // Check if the email is in the RegisteredUsers array
-            const emailExists = registeredUsers.some(userMap => userMap.email === userEmail);
+            if (!emailDoc.exists) {
+                Alert.alert('Error', 'Email document does not exist.');
+                return;
+            }
 
-            if (!emailExists) {
+            // Retrieve data
+            const googleData = googleDoc.data() || {};
+            const emailData = emailDoc.data() || {};
+
+            const googleUsers = googleData.RegisteredUsers || [];
+            const emailUsers = emailData.RegisteredUsers || [];
+
+            console.log('Google Users:', googleUsers);
+            console.log('Email Users:', emailUsers);
+
+            // Check if the email exists in either document, case-insensitive
+            const emailInGoogle = googleUsers.some(userMap => userMap.email.toLowerCase() === userEmail);
+            const emailInEmail = emailUsers.some(userMap => userMap.email.toLowerCase() === userEmail);
+
+            if (!emailInGoogle && !emailInEmail) {
                 Alert.alert('Error', 'User email not found in the database.');
                 return;
             }
@@ -47,14 +67,23 @@ const ConfirmDelectionScreen = ({ navigation }) => {
                     {
                         text: 'OK',
                         onPress: async () => {
-                            // Filter out the email from the RegisteredUsers array
-                            const updatedRegisteredUsers = registeredUsers.filter(userMap => userMap.email !== userEmail);
-                            
-                            // Update the document with the modified RegisteredUsers array
-                            await googleDocRef.update({ RegisteredUsers: updatedRegisteredUsers });
+                            // Update both documents to remove the user's email
+                            const updatedGoogleUsers = googleUsers.filter(userMap => userMap.email.toLowerCase() !== userEmail);
+                            const updatedEmailUsers = emailUsers.filter(userMap => userMap.email.toLowerCase() !== userEmail);
+
+                            console.log('Updated Google Users:', updatedGoogleUsers);
+                            console.log('Updated Email Users:', updatedEmailUsers);
+
+                            await Promise.all([
+                                googleDocRef.update({ RegisteredUsers: updatedGoogleUsers }),
+                                emailDocRef.update({ RegisteredUsers: updatedEmailUsers })
+                            ]);
 
                             // Delete the user from Firebase Authentication
                             await user.delete();
+
+                            // Clear AsyncStorage
+                            await AsyncStorage.clear();
 
                             // Notify the user and navigate
                             Alert.alert('Success', 'Your account has been deleted.');
@@ -65,9 +94,10 @@ const ConfirmDelectionScreen = ({ navigation }) => {
             );
         } catch (error) {
             Alert.alert('Error', 'An error occurred while deleting your account.');
-            console.error(error);
+            console.error('Account Deletion Error:', error);
         }
     };
+
 
     return (
         <View style={styles.container}>

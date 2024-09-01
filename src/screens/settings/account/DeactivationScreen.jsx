@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 
-// Define the component
+
 const DeactivationScreen = ({ navigation }) => {
     const [selectedOption, setSelectedOption] = useState(null);
 
-    // Function to handle continue button press
+    
     const handleContinue = () => {
         if (!selectedOption) {
             Alert.alert('Please select an option', 'You need to select either Deactivate or Delete account.');
@@ -13,10 +13,10 @@ const DeactivationScreen = ({ navigation }) => {
         }
 
         if (selectedOption === 'delete') {
-            // Navigate to the ConfirmDelectionScreen when 'delete' is selected
+            
             navigation.navigate('ConfirmDelectionScreen');
         } else {
-            // Handle deactivation logic if needed
+            
             Alert.alert('Selected Option', `You selected to ${selectedOption}.`);
         }
     };

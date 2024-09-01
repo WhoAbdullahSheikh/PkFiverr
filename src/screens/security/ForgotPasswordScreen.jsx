@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Platform, ScrollVi
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Icon if not already imported
 import auth from '@react-native-firebase/auth'; // Import Firebase Auth
+import firestore from '@react-native-firebase/firestore'; // Import Firebase Firestore
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -27,11 +28,44 @@ const ForgotPasswordScreen = ({ navigation }) => {
     if (valid) {
       setLoading(true);
       try {
+        const userEmail = email.toLowerCase();
+
+        // References to the documents in the 'users' collection
+        const googleDocRef = firestore().collection('users').doc('google');
+        const emailDocRef = firestore().collection('users').doc('email');
+
+        // Fetch both documents
+        const [googleDoc, emailDoc] = await Promise.all([
+          googleDocRef.get(),
+          emailDocRef.get()
+        ]);
+
+        if (!googleDoc.exists && !emailDoc.exists) {
+          setEmailError('Documents do not exist.');
+          setLoading(false);
+          return;
+        }
+
+        // Retrieve data
+        const googleData = googleDoc.data() || {};
+        const emailData = emailDoc.data() || {};
+
+        const googleUsers = googleData.RegisteredUsers || [];
+        const emailUsers = emailData.RegisteredUsers || [];
+
+        // Check if the email exists in either document, case-insensitive
+        const emailInGoogle = googleUsers.some(userMap => userMap.email.toLowerCase() === userEmail);
+        const emailInEmail = emailUsers.some(userMap => userMap.email.toLowerCase() === userEmail);
+
+        if (!emailInGoogle && !emailInEmail) {
+          setEmailError('No user found with this email address');
+          setLoading(false);
+          return;
+        }
+
         // Send password reset email
         await auth().sendPasswordResetEmail(email);
-        // Notify user
         alert('Password reset link sent to your email');
-        // Navigate back to sign-in screen or another screen
         navigation.goBack();
       } catch (error) {
         console.error('Error sending password reset email:', error);

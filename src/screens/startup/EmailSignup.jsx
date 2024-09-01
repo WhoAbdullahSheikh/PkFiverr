@@ -140,7 +140,7 @@ const EmailSignup = ({ navigation }) => {
                 const usersArrayGoogle = dataGoogle.RegisteredUsers || [];
     
                 usersArrayEmail.push(userData);
-                usersArrayGoogle.push(userData);
+              
     
                 await Promise.all([
                     userRefEmail.set({ RegisteredUsers: usersArrayEmail }),
