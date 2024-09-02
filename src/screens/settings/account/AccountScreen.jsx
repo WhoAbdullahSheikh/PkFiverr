@@ -26,7 +26,7 @@ const AccountScreen = ({ navigation }) => {
                 if (userSession) {
                     const user = JSON.parse(userSession);
                     setEmail(user.email);
-                    setFullName(user.displayName); 
+                    setFullName(user.displayName);
                 } else {
                     Alert.alert('No User Data', 'User is not logged in.');
                 }
@@ -39,7 +39,7 @@ const AccountScreen = ({ navigation }) => {
     }, []);
 
     const handleLogout = () => {
-        setModalVisible(true); 
+        setModalVisible(true);
     };
 
     const confirmLogout = async () => {
@@ -54,7 +54,7 @@ const AccountScreen = ({ navigation }) => {
     };
 
     const cancelLogout = () => {
-        setModalVisible(false); 
+        setModalVisible(false);
     };
 
     const balancenavigate = () => {
@@ -64,7 +64,9 @@ const AccountScreen = ({ navigation }) => {
     const deactivationnavigate = () => {
         navigation.navigate('DeactivationScreen');
     };
-
+    const privacynavigate = () => {
+        navigation.navigate('PrivacyInfoScreen');
+    };
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -72,13 +74,13 @@ const AccountScreen = ({ navigation }) => {
                 <Text style={styles.sectionTitle}>Account info</Text>
                 <View style={styles.section}>
                     <View style={styles.infoRow}>
-                        <Text style={styles.label}>Full name</Text>
                         <Text style={styles.info}>{fullName || 'Loading...'}</Text>
+                        <Text style={styles.label}>Full name</Text>
                     </View>
 
                     <View style={styles.infoRow}>
-                        <Text style={styles.label}>Email</Text>
                         <Text style={styles.info}>{email || 'Loading...'}</Text>
+                        <Text style={styles.label}>Email</Text>
                     </View>
 
                     <TouchableOpacity style={styles.optionContainer} onPress={balancenavigate}>
@@ -95,7 +97,7 @@ const AccountScreen = ({ navigation }) => {
                         <Icon name="chevron-right" size={24} color="#BDBDBD" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.optionContainer}>
+                    <TouchableOpacity style={styles.optionContainer} onPress={privacynavigate}>
                         <Text style={styles.optionText}>Privacy</Text>
                         <Icon name="chevron-right" size={24} color="#BDBDBD" />
                     </TouchableOpacity>
@@ -173,6 +175,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: Platform.OS === 'ios' ? 16 : 12,
         color: '#797b84',
+        marginTop: 10,
         fontFamily: 'Raleway-Regular',
     },
     info: {

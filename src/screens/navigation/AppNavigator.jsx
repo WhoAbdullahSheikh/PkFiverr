@@ -26,6 +26,7 @@ import BalanceScreen from '../settings/account/BalanceScreen';
 import DeactivationScreen from '../settings/account/DeactivationScreen';
 import ConfirmDelectionScreen from '../settings/account/ConfirmDelectionScreen';
 import EmailSignup from '../startup/EmailSignup';
+import PrivacyInfoScreen from '../settings/account/PrivacyInfoScreen';
 
 const Stack = createStackNavigator();
 
@@ -309,6 +310,33 @@ const AppNavigator = () => {
           options={({ navigation }) => ({
             headerShown: true,
             headerTitle: 'Delete account',
+            headerStyle: {
+              backgroundColor: '#222324',
+              shadowColor: 'transparent', // Remove shadow
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              color: 'white',
+              fontSize: Platform.OS === 'ios' ? 22 : 16,
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ paddingLeft: 15 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="chevron-back" size={24} color="white" />
+              </TouchableOpacity>
+            ),
+
+          })}
+        />
+         <Stack.Screen
+          name="PrivacyInfoScreen"
+          component={PrivacyInfoScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerTitle: 'Privacy',
             headerStyle: {
               backgroundColor: '#222324',
               shadowColor: 'transparent', // Remove shadow
