@@ -33,7 +33,6 @@ const SigninScreen = ({ navigation }) => {
       webClientId: '942835851882-h8vnfnrp021mh5vm8mgbvaoqnphvdemk.apps.googleusercontent.com',
     });
 
-
     return () => {
       setEmailOrUsername('');
       setPassword('');
@@ -44,35 +43,44 @@ const SigninScreen = ({ navigation }) => {
 
   const onGoogleButtonPress = async () => {
     try {
-      
       await GoogleSignin.signOut();
-
-      
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-
-      
       const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-      
       const userCredential = await auth().signInWithCredential(googleCredential);
       const user = userCredential.user;
-
-      
-      const googleRef = firestore().collection('users').doc('google');
-      const emailRef = firestore().collection('users').doc('email');
-
-      const [googleDoc, emailDoc] = await Promise.all([googleRef.get(), emailRef.get()]);
-
-      const googleUsers = googleDoc.data()?.RegisteredUsers || [];
-      const emailUsers = emailDoc.data()?.RegisteredUsers || [];
-
       const email = user.email?.toLowerCase() || '';
+      const photo = user.photoURL || '';
 
-      const existingUser = [...googleUsers, ...emailUsers].some((u) => u.email.toLowerCase() === email);
+      const userRef = firestore().collection('users').doc('email');
+      const userDoc = await userRef.get();
 
-      if (existingUser) {
+      if (userDoc.exists) {
         
+        const userData = userDoc.data();
+        const registeredUsers = userData?.RegisteredUsers || [];
+
+        
+        const userIndex = registeredUsers.findIndex(u => u.email.toLowerCase() === email);
+
+        if (userIndex !== -1) {
+          
+          registeredUsers[userIndex] = {
+            ...registeredUsers[userIndex],
+            photo
+          };
+
+          
+          await userRef.update({ RegisteredUsers: registeredUsers });
+        } else {
+          
+          registeredUsers.push({
+            email: email,
+            photoURL: photo
+          });
+          await userRef.update({ RegisteredUsers: registeredUsers });
+        }
+
         await AsyncStorage.setItem('userSession', JSON.stringify(user));
         navigation.navigate('HomeScreen');
       } else {
@@ -84,7 +92,6 @@ const SigninScreen = ({ navigation }) => {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         Alert.alert('Alert', 'You canceled the Google Sign-in process.');
       } else if (error.code === 'auth/provider-already-linked') {
-        
         Alert.alert('Error', 'The Google account is already linked to another user.');
       } else {
         console.error('Google Sign-In Error:', error);
@@ -92,6 +99,8 @@ const SigninScreen = ({ navigation }) => {
       }
     }
   };
+
+
 
   const handleSignUpWithApple = () => {
     Alert.alert("Attention!", "This authentication method is not yet supported. Soon it will be functional");
